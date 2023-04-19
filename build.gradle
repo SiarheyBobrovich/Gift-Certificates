@@ -1,0 +1,46 @@
+plugins {
+    id 'application'
+    id 'jacoco'
+    id 'war'
+}
+
+version '0.0.1'
+group = 'ru.clevertec.ecl'
+sourceCompatibility = JavaVersion.VERSION_17
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+    implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+    runtimeOnly 'org.postgresql:postgresql:42.5.1'
+    implementation 'org.springframework:spring-webmvc:6.0.8'
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+    implementation 'org.springframework:spring-jdbc:6.0.8'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.26'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.26'
+    testImplementation "org.testcontainers:postgresql:1.17.6"
+    testImplementation "org.testcontainers:junit-jupiter:1.17.6"
+    testImplementation 'org.assertj:assertj-core:3.24.2'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.3.0'
+}
+
+tasks.named('test') {
+    finalizedBy(jacocoTestReport)
+    useJUnitPlatform()
+}
+
+tasks.named("jacocoTestReport") {
+    jacocoTestReport {
+        reports {
+            xml.required = false
+            csv.required = false
+            html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+        }
+    }
+}
