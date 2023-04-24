@@ -18,9 +18,9 @@ public abstract class AbstractHibernateRepository<T, ID extends Serializable> im
 
     @Override
     public T save(T entity) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = sessionFactory.getCurrentSession()) {
             session.getTransaction().begin();
-            session.save(entity);
+            session.persist(entity);
             session.getTransaction().commit();
         }
         return entity;
@@ -28,7 +28,7 @@ public abstract class AbstractHibernateRepository<T, ID extends Serializable> im
 
     @Override
     public T update(T entity) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = sessionFactory.getCurrentSession()) {
             session.getTransaction().begin();
             session.update(entity);
             session.getTransaction().commit();
@@ -38,7 +38,7 @@ public abstract class AbstractHibernateRepository<T, ID extends Serializable> im
 
     @Override
     public void delete(ID id) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = sessionFactory.getCurrentSession()) {
             session.getTransaction().begin();
             session.byId(getClassType())
                     .loadOptional(id)
@@ -49,20 +49,18 @@ public abstract class AbstractHibernateRepository<T, ID extends Serializable> im
 
     @Override
     public Optional<T> findById(ID id) {
-        Optional<T> entity;
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = sessionFactory.getCurrentSession()) {
             session.getTransaction().begin();
-            entity = session.byId(getClassType())
-                    .loadOptional(id);
+            Optional<T> optionalT = session.byId(getClassType()).loadOptional(id);
             session.getTransaction().commit();
+            return optionalT;
         }
-        return entity;
     }
 
     @Override
     public List<T> findAll() {
         List<T> entity;
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = sessionFactory.getCurrentSession()) {
             session.getTransaction().begin();
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<T> criteria = builder.createQuery(getClassType());

@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgres://localhost:5432/clevertec
+    username: postgres
+    password: 172143
+  hibernate:
+    dialect: org.hibernate.dialect.PostgreSQL10Dialect
+    connection:
+      driver: org.postgresql.Driver

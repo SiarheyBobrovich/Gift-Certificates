@@ -19,6 +19,7 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql:42.5.1'
     compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 
+    implementation 'org.hibernate.orm:hibernate-hikaricp:6.2.1.Final'
     implementation 'org.springframework:spring-webmvc:6.0.8'
     implementation 'org.hibernate:hibernate-core:5.6.1.Final'
     implementation 'org.yaml:snakeyaml:2.0'

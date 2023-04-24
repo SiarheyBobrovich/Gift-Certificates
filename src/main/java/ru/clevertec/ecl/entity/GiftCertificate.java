@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -42,10 +41,9 @@ public class GiftCertificate implements Serializable {
     @Column(name = "last_update_date", nullable = false)
     private LocalDateTime lastUpdateDate;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(schema = "certificate", name = "gc_tag",
             joinColumns = @JoinColumn(name = "gc_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "t_id", referencedColumnName = "id"))
     private List<Tag> tags;
 }
-

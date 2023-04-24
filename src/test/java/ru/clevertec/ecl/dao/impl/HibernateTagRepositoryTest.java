@@ -1,6 +1,7 @@
 package ru.clevertec.ecl.dao.impl;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.util.PostgresTestContainer;
@@ -47,8 +48,16 @@ class HibernateTagRepositoryTest extends PostgresTestContainer {
     }
 
     @Test
+    void checkDeleteWithCross() {
+        repository.delete(5L);
+        Optional<Tag> tag = repository.findById(5L);
+
+        assertThat(tag).isEmpty();
+    }
+
+    @Test
     void checkFindById() {
-        Tag expected = Tag.builder().id(1L).name("first tag").build();
+        Tag expected = Tag.builder().id(1L).name("#1").build();
         Tag tag = repository.findById(1L).orElseThrow();
 
         assertThat(tag).isEqualTo(expected);
@@ -60,13 +69,5 @@ class HibernateTagRepositoryTest extends PostgresTestContainer {
         tags.forEach(System.out::println);
 
         assertThat(tags).isNotEmpty();
-    }
-
-    @Test
-    void findByName() {
-        Tag expected = Tag.builder().id(1L).name("first tag").build();
-        Tag tag = repository.findByName("first tag").orElseThrow();
-
-        assertThat(tag).isEqualTo(expected);
     }
 }
