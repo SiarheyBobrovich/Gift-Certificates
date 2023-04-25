@@ -23,7 +23,7 @@ public class CertificateBuilder {
     private BigDecimal price = BigDecimal.valueOf(1);
 
     @Builder.Default
-    private String name = "name";
+    private String name = "Certificate";
 
     @Builder.Default
     private String description = "description";

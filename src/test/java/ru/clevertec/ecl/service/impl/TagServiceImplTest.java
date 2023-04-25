@@ -1,5 +1,6 @@
 package ru.clevertec.ecl.service.impl;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,8 +13,10 @@ import ru.clevertec.ecl.data.tag.ResponseTagDto;
 import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.exception.EntityNotFoundException;
 
+import javax.validation.Validator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,6 +31,9 @@ class TagServiceImplTest {
 
     @Mock
     private TagRepository tagRepository;
+
+    @Mock
+    private Validator validator;
 
     @Test
     void checkFindById() {
@@ -82,28 +88,46 @@ class TagServiceImplTest {
         assertThat(all).isEmpty();
     }
 
-    @Test
-    void checkCreate() {
-        RequestTagDto tagDto = new RequestTagDto("name");
-        Tag tagSave = Tag.builder().name("name").build();
-        Tag tag = Tag.builder().id(1L).name("name").build();
+    @Nested
+    class Create {
 
-        doReturn(tag).when(tagRepository).save(tagSave);
+        @BeforeEach
+        void setUp() {
+            doReturn(Set.of()).when(validator).validate(any());
+        }
 
-        tagService.create(tagDto);
+        @Test
+        void checkCreate() {
+            RequestTagDto tagDto = new RequestTagDto("name");
+            Tag tagSave = Tag.builder().name("name").build();
+            Tag tag = Tag.builder().id(1L).name("name").build();
 
-        verify(tagRepository, times(1)).save(tagSave);
+            doReturn(tag).when(tagRepository).save(tagSave);
+
+            tagService.create(tagDto);
+
+            verify(tagRepository, times(1)).save(tagSave);
+        }
     }
 
-    @Test
-    void checkUpdate() {
-        RequestTagDto tagDto = new RequestTagDto("name");
-        Tag tagUpdate = Tag.builder().id(1L).name("name").build();
+    @Nested
+    class Update {
 
-        doReturn(tagUpdate).when(tagRepository).update(tagUpdate);
+        @BeforeEach
+        void setUp() {
+            doReturn(Set.of()).when(validator).validate(any());
+        }
 
-        tagService.update(1L, tagDto);
+        @Test
+        void checkUpdate() {
+            RequestTagDto tagDto = new RequestTagDto("name");
+            Tag tagUpdate = Tag.builder().id(1L).name("name").build();
 
-        verify(tagRepository, times(1)).update(tagUpdate);
+            doReturn(tagUpdate).when(tagRepository).update(tagUpdate);
+
+            tagService.update(1L, tagDto);
+
+            verify(tagRepository, times(1)).update(tagUpdate);
+        }
     }
 }

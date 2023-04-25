@@ -5,7 +5,10 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.clevertec.ecl.exception.AbstractValidationException;
 import ru.clevertec.ecl.exception.EntityNotFoundException;
+
+import java.util.List;
 
 @RestControllerAdvice
 @Slf4j
@@ -26,10 +29,18 @@ public class GlobalControllerAdvice {
     }
 
     @ExceptionHandler
-    public ResponseEntity<Error> handleConstraintViolationException(Throwable e) {
+    public ResponseEntity<List<Error>> handleConstraintViolationException(AbstractValidationException e) {
+        List<Error> errors = e.getConstraintViolations().stream()
+                .map(error -> new Error(error.getMessage(), e.getCode()))
+                .toList();
+        return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Error> handleThrowable(Throwable e) {
         log.info(e.getMessage());
         Error error = new Error(e.getMessage(), 500);
-        return ResponseEntity.badRequest().body(error);
+        return ResponseEntity.internalServerError().body(error);
     }
 
     record Error(String errorMessage, int errorCode) {

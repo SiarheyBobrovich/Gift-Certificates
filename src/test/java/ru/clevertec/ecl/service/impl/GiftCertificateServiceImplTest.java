@@ -1,5 +1,6 @@
 package ru.clevertec.ecl.service.impl;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,11 +12,15 @@ import ru.clevertec.ecl.data.gift_certificate.RequestGiftCertificateDto;
 import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.util.CertificateBuilder;
 
+import javax.validation.Validator;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +31,10 @@ class GiftCertificateServiceImplTest {
 
     @Mock
     private GiftCertificateRepository repository;
+
+    @Mock
+    private Validator validator;
+
 
     @Test
     void findById() {
@@ -38,10 +47,16 @@ class GiftCertificateServiceImplTest {
     @Nested
     class Create {
 
+        @BeforeEach
+        void setUp() {
+            doReturn(Set.of()).when(validator).validate(any());
+        }
+
         @Test
         void checkCreateId() {
             CertificateBuilder build = CertificateBuilder.builder().build();
             RequestGiftCertificateDto requestDto = build.getRequestDto();
+
 
             service.create(requestDto);
 
