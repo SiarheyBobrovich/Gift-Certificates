@@ -25,11 +25,11 @@ public class TransactionInvocationHandler implements InvocationHandler {
         final boolean classAnnotationPresent = originalClass.isAnnotationPresent(Transaction.class);
         final Method originalMethod = ReflectionUtils.findMethod(originalClass, method.getName(), method.getParameterTypes());
         final boolean methodAnnotationPresent = Objects.nonNull(originalMethod) && originalMethod.isAnnotationPresent(Transaction.class);
-        boolean isPresent = classAnnotationPresent || methodAnnotationPresent;
+        boolean isPresentAnnotation = classAnnotationPresent || methodAnnotationPresent;
         final Object result;
         Transaction transaction;
 
-        if (isPresent) {
+        if (isPresentAnnotation) {
             if (methodAnnotationPresent) {
                 transaction = originalMethod.getAnnotation(Transaction.class);
 

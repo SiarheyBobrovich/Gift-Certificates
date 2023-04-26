@@ -50,8 +50,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<ResponseGiftCertificateDto> findByPartOfNameOrDescription(Filter filter) {
-        final List<GiftCertificate> giftCertificates = repository.findByPart(filter);
+    public List<ResponseGiftCertificateDto> findByFilter(Filter filter) {
+        final List<GiftCertificate> giftCertificates = repository.findByFilter(filter);
 
         return mapper.listGiftCertificateToListResponseGiftCertificateDto(giftCertificates);
     }

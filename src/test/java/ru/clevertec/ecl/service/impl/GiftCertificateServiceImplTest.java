@@ -320,11 +320,11 @@ class GiftCertificateServiceImplTest {
         List<GiftCertificate> returned = List.of(build1.getEntity(), build2.getEntity(), build3.getEntity());
         Filter filter = Filter.builder().partOfNameOrDescription("1").build();
 
-        doReturn(returned).when(repository).findByPart(filter);
+        doReturn(returned).when(repository).findByFilter(filter);
 
         List<ResponseGiftCertificateDto> expected = List.of(build1.getResponseDto(), build2.getResponseDto(), build3.getResponseDto());
 
-        List<ResponseGiftCertificateDto> actual = service.findByPartOfNameOrDescription(filter);
+        List<ResponseGiftCertificateDto> actual = service.findByFilter(filter);
 
         assertThat(actual).isEqualTo(expected);
     }

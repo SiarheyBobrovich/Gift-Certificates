@@ -8,6 +8,12 @@ import java.util.List;
 
 public interface GiftCertificateService extends CrudService<RequestGiftCertificateDto, ResponseGiftCertificateDto, Long> {
 
-    List<ResponseGiftCertificateDto> findByPartOfNameOrDescription(Filter filter);
+    /**
+     * Find certificate by filter, map it to dto and return
+     *
+     * @param filter search options
+     * @return List of found certificates as dto
+     */
+    List<ResponseGiftCertificateDto> findByFilter(Filter filter);
 
 }

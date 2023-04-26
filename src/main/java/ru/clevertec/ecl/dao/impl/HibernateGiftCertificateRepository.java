@@ -22,7 +22,7 @@ public class HibernateGiftCertificateRepository extends AbstractHibernateReposit
     }
 
     @Override
-    public List<GiftCertificate> findByPart(Filter filter) {
+    public List<GiftCertificate> findByFilter(Filter filter) {
         String selectHQL = """
                 SELECT DISTINCT gc FROM GiftCertificate gc
                 JOIN gc.tags t

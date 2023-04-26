@@ -170,7 +170,7 @@ class HibernateGiftCertificateServiceTest extends PostgresTestContainer {
         List<Long> expectedIdList = List.of(1L);
         Filter firstTag = Filter.builder().tagName("#5").build();
 
-        List<GiftCertificate> byPart = repository.findByPart(firstTag);
+        List<GiftCertificate> byPart = repository.findByFilter(firstTag);
         List<Long> actualIdList = byPart.stream().map(GiftCertificate::getId).toList();
 
         assertThat(actualIdList).isEqualTo(expectedIdList);
@@ -182,7 +182,7 @@ class HibernateGiftCertificateServiceTest extends PostgresTestContainer {
         List<Long> expectedId = List.of(1L, 2L);
 
         Filter secondTag = Filter.builder().tagName("#6").build();
-        List<GiftCertificate> byPart = repository.findByPart(secondTag);
+        List<GiftCertificate> byPart = repository.findByFilter(secondTag);
         List<Long> actualIdList = byPart.stream().map(GiftCertificate::getId).toList();
 
         assertThat(actualIdList).isEqualTo(expectedId);
@@ -198,7 +198,7 @@ class HibernateGiftCertificateServiceTest extends PostgresTestContainer {
         List<String> sort = List.of("name_asc", "createDate_desc");
         secondTag.addSortFieldName(sort);
 
-        List<GiftCertificate> byPart = repository.findByPart(secondTag);
+        List<GiftCertificate> byPart = repository.findByFilter(secondTag);
         List<Long> actualIdList = byPart.stream().map(GiftCertificate::getId).toList();
 
         assertThat(actualIdList).isEqualTo(expectedId);
@@ -216,7 +216,7 @@ class HibernateGiftCertificateServiceTest extends PostgresTestContainer {
         List<String> sort = List.of("name_asc", "createDate_desc");
         secondTag.addSortFieldName(sort);
 
-        List<GiftCertificate> byPart = repository.findByPart(secondTag);
+        List<GiftCertificate> byPart = repository.findByFilter(secondTag);
         List<Long> actualIdList = byPart.stream().map(GiftCertificate::getId).toList();
 
         assertThat(actualIdList).isEqualTo(expectedId);

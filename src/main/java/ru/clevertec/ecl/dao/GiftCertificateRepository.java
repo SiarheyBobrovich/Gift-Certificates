@@ -7,6 +7,11 @@ import java.util.List;
 
 public interface GiftCertificateRepository extends CrudRepository<GiftCertificate, Long> {
 
-    List<GiftCertificate> findByPart(Filter filter);
+    /**
+     * Find certificate by filter
+     * @param filter search options
+     * @return List of found certificates or empty list
+     */
+    List<GiftCertificate> findByFilter(Filter filter);
 
 }
