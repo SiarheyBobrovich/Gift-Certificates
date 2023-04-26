@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 import ru.clevertec.ecl.dao.GiftCertificateRepository;
-import ru.clevertec.ecl.dao.TagRepository;
 import ru.clevertec.ecl.data.gift_certificate.RequestGiftCertificateDto;
 import ru.clevertec.ecl.data.gift_certificate.ResponseGiftCertificateDto;
+import ru.clevertec.ecl.data.tag.RequestTagDto;
 import ru.clevertec.ecl.entity.GiftCertificate;
 import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.exception.GiftCertificateNotFoundException;
@@ -20,7 +20,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,7 +29,6 @@ import java.util.stream.Collectors;
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertificateRepository repository;
-    private final TagRepository tagRepository;
     private final GiftCertificateMapper mapper = Mappers.getMapper(GiftCertificateMapper.class);
 
     private final Validator validator;
@@ -75,28 +73,28 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public void update(Long id, RequestGiftCertificateDto dto) {
         checkDto(dto);
 
-        final LocalDateTime currentDate = LocalDateTime.now();
-        final GiftCertificate currentGiftCertificate = repository.findById(id)
+        GiftCertificate currentCertificate = repository.findById(id)
                 .orElseThrow(() -> new GiftCertificateNotFoundException(id));
-        final List<Tag> currentTags = currentGiftCertificate.getTags();
-        final Set<String> currentTagNames = currentTags.stream().map(Tag::getName).collect(Collectors.toSet());
-        final GiftCertificate updatedCertificate = mapper.requestGiftCertificateDtoToGiftCertificate(dto);
-        final List<Tag> updatedTags = updatedCertificate.getTags();
 
-        if (Objects.nonNull(updatedTags)) {
-            updatedCertificate.getTags().stream()
-                    .filter(tag -> !currentTagNames.contains(tag.getName()))
-                    .map(tag -> tagRepository.findTagByName(tag.getName())
-                            .orElse(tag))
-                    .forEach(currentTags::add);
-        }
+        Set<String> tagNames = currentCertificate.getTags().stream()
+                .map(Tag::getName)
+                .collect(Collectors.toSet());
 
-        updatedCertificate.setId(id);
-        updatedCertificate.setCreateDate(currentGiftCertificate.getCreateDate());
-        updatedCertificate.setLastUpdateDate(currentDate);
-        updatedCertificate.setTags(currentTags);
+        currentCertificate.setLastUpdateDate(LocalDateTime.now());
+        currentCertificate.setName(dto.name());
+        currentCertificate.setDescription(dto.description());
+        currentCertificate.setPrice(dto.price());
+        currentCertificate.setDuration(dto.duration());
 
-        repository.update(updatedCertificate);
+        dto.tags().stream()
+                .map(RequestTagDto::name)
+                .filter(name -> !tagNames.contains(name))
+                .map(name -> Tag.builder()
+                        .name(name)
+                        .build())
+                .forEach(currentCertificate::addTag);
+
+        repository.update(currentCertificate);
     }
 
     @Override

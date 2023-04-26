@@ -6,7 +6,9 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -46,4 +48,11 @@ public class GiftCertificate implements Serializable {
             joinColumns = @JoinColumn(name = "gc_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "t_id", referencedColumnName = "id"))
     private List<Tag> tags;
+
+    public void addTag(Tag tag) {
+        if (Objects.isNull(tags)) {
+            tags = new ArrayList<>();
+        }
+        tags.add(tag);
+    }
 }

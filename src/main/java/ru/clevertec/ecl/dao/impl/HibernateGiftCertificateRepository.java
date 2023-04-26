@@ -43,8 +43,7 @@ public class HibernateGiftCertificateRepository extends AbstractHibernateReposit
             query.setParameter("tagName", tagName);
         }
 
-        List<GiftCertificate> resultList = query.getResultList();
-        return resultList;
+        return query.getResultList();
     }
 
     private String where(String tagName, String partOfNameOrDescription) {
@@ -79,6 +78,9 @@ public class HibernateGiftCertificateRepository extends AbstractHibernateReposit
     @Override
     public GiftCertificate update(GiftCertificate entity) {
         Session session = sessionFactory.getCurrentSession();
+        session.detach(entity);
+
+        loadTags(entity);
         session.merge(entity);
         return entity;
     }
@@ -93,17 +95,14 @@ public class HibernateGiftCertificateRepository extends AbstractHibernateReposit
     }
 
     private void loadTags(GiftCertificate giftCertificate) {
-        final List<Tag> tags = giftCertificate.getTags();
         Session session = sessionFactory.getCurrentSession();
+        final List<Tag> tags = giftCertificate.getTags();
         if (Objects.nonNull(tags)) {
             Query<Tag> query = session.createNamedQuery("tagByName", Tag.class);
-            List<Tag> currentTags = tags.stream()
-                    .map(tag -> query.setParameter("name", tag.getName())
-                            .getResultStream()
-                            .findFirst()
-                            .orElse(tag))
-                    .toList();
-            giftCertificate.setTags(currentTags);
+            tags.forEach(tag -> query.setParameter("name", tag.getName())
+                    .getResultStream()
+                    .findFirst()
+                    .ifPresent(cTag -> tag.setId(cTag.getId())));
         }
     }
 
