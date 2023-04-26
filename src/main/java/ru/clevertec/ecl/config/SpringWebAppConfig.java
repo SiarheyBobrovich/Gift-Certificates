@@ -40,7 +40,7 @@ public class SpringWebAppConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    BeanFactoryPostProcessor beanFactoryPostProcessor() {
+    public BeanFactoryPostProcessor beanFactoryPostProcessor() {
         PropertySourcesPlaceholderConfigurer propertyConfigurer = new PropertySourcesPlaceholderConfigurer();
         YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
         yaml.setResources(new ClassPathResource("application.yml"));

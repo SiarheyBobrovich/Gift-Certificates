@@ -9,5 +9,4 @@ public interface GiftCertificateRepository extends CrudRepository<GiftCertificat
 
     List<GiftCertificate> findByPart(Filter filter);
 
-    GiftCertificate loadTags(GiftCertificate giftCertificate);
 }

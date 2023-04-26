@@ -11,6 +11,7 @@ import ru.clevertec.ecl.exception.TagNotFoundException;
 import ru.clevertec.ecl.exception.TagValidationException;
 import ru.clevertec.ecl.mapper.TagMapper;
 import ru.clevertec.ecl.service.TagService;
+import ru.clevertec.ecl.transaction.Transaction;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -19,6 +20,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Transaction(readOnly = true)
 public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
@@ -39,6 +41,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @Transaction
     public void create(RequestTagDto dto) {
         checkDto(dto);
 
@@ -47,6 +50,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @Transaction
     public void update(Long id, RequestTagDto dto) {
         checkDto(dto);
 
@@ -56,6 +60,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @Transaction
     public void delete(Long id) {
         tagRepository.delete(id);
     }

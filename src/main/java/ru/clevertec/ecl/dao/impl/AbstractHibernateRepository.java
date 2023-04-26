@@ -3,6 +3,7 @@ package ru.clevertec.ecl.dao.impl;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import ru.clevertec.ecl.dao.CrudRepository;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -18,57 +19,44 @@ public abstract class AbstractHibernateRepository<T, ID extends Serializable> im
 
     @Override
     public T save(T entity) {
-        try (Session session = sessionFactory.getCurrentSession()) {
-            session.getTransaction().begin();
-            session.persist(entity);
-            session.getTransaction().commit();
-        }
+        Session session = sessionFactory.getCurrentSession();
+        session.persist(entity);
+        session.flush();
         return entity;
     }
 
     @Override
     public T update(T entity) {
-        try (Session session = sessionFactory.getCurrentSession()) {
-            session.getTransaction().begin();
-            session.update(entity);
-            session.getTransaction().commit();
-        }
+        Session session = sessionFactory.getCurrentSession();
+        session.update(entity);
+        session.flush();
         return entity;
     }
 
     @Override
     public void delete(ID id) {
-        try (Session session = sessionFactory.getCurrentSession()) {
-            session.getTransaction().begin();
-            session.byId(getClassType())
-                    .loadOptional(id)
-                    .ifPresent(session::delete);
-            session.getTransaction().commit();
-        }
+        Session session = sessionFactory.getCurrentSession();
+        session.byId(getClassType())
+                .loadOptional(id)
+                .ifPresent(session::delete);
+        session.flush();
     }
 
     @Override
     public Optional<T> findById(ID id) {
-        try (Session session = sessionFactory.getCurrentSession()) {
-            session.getTransaction().begin();
-            Optional<T> optionalT = session.byId(getClassType()).loadOptional(id);
-            session.getTransaction().commit();
-            return optionalT;
-        }
+        Session session = sessionFactory.getCurrentSession();
+        Transaction transaction = session.getTransaction();
+
+        return session.byId(getClassType()).loadOptional(id);
     }
 
     @Override
     public List<T> findAll() {
-        List<T> entity;
-        try (Session session = sessionFactory.getCurrentSession()) {
-            session.getTransaction().begin();
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<T> criteria = builder.createQuery(getClassType());
-            criteria.from(getClassType());
-            entity = session.createQuery(criteria).getResultList();
-            session.getTransaction().commit();
-        }
-        return entity;
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<T> criteria = builder.createQuery(getClassType());
+        criteria.from(getClassType());
+        return session.createQuery(criteria).getResultList();
     }
 
     protected abstract Class<T> getClassType();

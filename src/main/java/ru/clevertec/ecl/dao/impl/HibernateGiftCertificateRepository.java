@@ -2,6 +2,7 @@ package ru.clevertec.ecl.dao.impl;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.dao.GiftCertificateRepository;
@@ -33,21 +34,18 @@ public class HibernateGiftCertificateRepository extends AbstractHibernateReposit
 
         String where = where(tagName, part);
 
-        try (Session session = sessionFactory.getCurrentSession()) {
-            session.getTransaction().begin();
-            Query<GiftCertificate> query = session.createQuery(selectHQL + where + orderBy
-                    , GiftCertificate.class);
-            if (Objects.nonNull(part)) {
-                query.setParameter("part", "%" + part + "%");
-            }
-            if (Objects.nonNull(tagName)) {
-                query.setParameter("tagName", tagName);
-            }
-
-            List<GiftCertificate> resultList = query.getResultList();
-            session.getTransaction().commit();
-            return resultList;
+        Session session = sessionFactory.getCurrentSession();
+        Query<GiftCertificate> query = session.createQuery(selectHQL + where + orderBy
+                , GiftCertificate.class);
+        if (Objects.nonNull(part)) {
+            query.setParameter("part", "%" + part + "%");
         }
+        if (Objects.nonNull(tagName)) {
+            query.setParameter("tagName", tagName);
+        }
+
+        List<GiftCertificate> resultList = query.getResultList();
+        return resultList;
     }
 
     private String where(String tagName, String partOfNameOrDescription) {
@@ -81,26 +79,17 @@ public class HibernateGiftCertificateRepository extends AbstractHibernateReposit
 
     @Override
     public GiftCertificate update(GiftCertificate entity) {
-        try (Session session = sessionFactory.getCurrentSession()) {
-            session.getTransaction().begin();
-
-            session.merge(entity);
-
-            session.getTransaction().commit();
-        }
+        Session session = sessionFactory.getCurrentSession();
+        session.merge(entity);
         return entity;
     }
 
     @Override
     public GiftCertificate save(GiftCertificate giftCertificate) {
-        try (Session session = sessionFactory.getCurrentSession()) {
-            session.getTransaction().begin();
+        Session session = sessionFactory.getCurrentSession();
+        loadTags(giftCertificate, session);
+        session.persist(giftCertificate);
 
-            loadTags(giftCertificate, session);
-            session.persist(giftCertificate);
-
-            session.getTransaction().commit();
-        }
         return giftCertificate;
     }
 
@@ -116,17 +105,6 @@ public class HibernateGiftCertificateRepository extends AbstractHibernateReposit
                     .toList();
             giftCertificate.setTags(currentTags);
         }
-    }
-
-    @Override
-    public GiftCertificate loadTags(GiftCertificate giftCertificate) {
-        try (Session session = sessionFactory.getCurrentSession()) {
-            session.getTransaction().begin();
-            session.load(giftCertificate, giftCertificate.getId());
-            giftCertificate.getTags().toString();
-            session.getTransaction().commit();
-        }
-        return giftCertificate;
     }
 
     @Override

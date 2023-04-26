@@ -13,6 +13,7 @@ import ru.clevertec.ecl.exception.GiftCertificateValidationException;
 import ru.clevertec.ecl.mapper.GiftCertificateMapper;
 import ru.clevertec.ecl.pageable.Filter;
 import ru.clevertec.ecl.service.GiftCertificateService;
+import ru.clevertec.ecl.transaction.Transaction;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -23,6 +24,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Transaction(readOnly = true)
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertificateRepository repository;
@@ -34,14 +36,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public ResponseGiftCertificateDto findById(Long id) {
         GiftCertificate giftCertificate = repository.findById(id)
                 .orElseThrow(() -> new GiftCertificateNotFoundException(id));
-        repository.loadTags(giftCertificate);
         return mapper.giftCertificateToResponseGiftCertificateDto(giftCertificate);
     }
 
     @Override
     public List<ResponseGiftCertificateDto> findAll() {
         List<GiftCertificate> giftCertificates = repository.findAll();
-        giftCertificates.forEach(repository::loadTags);
 
         return mapper.listGiftCertificateToListResponseGiftCertificateDto(giftCertificates);
     }
@@ -50,12 +50,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public List<ResponseGiftCertificateDto> findByPartOfNameOrDescription(Filter filter) {
         final List<GiftCertificate> giftCertificates = repository.findByPart(filter);
 
-        giftCertificates.forEach(repository::loadTags);
-
         return mapper.listGiftCertificateToListResponseGiftCertificateDto(giftCertificates);
     }
 
     @Override
+    @Transaction
     public void create(RequestGiftCertificateDto dto) {
         checkDto(dto);
 
@@ -69,12 +68,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transaction(isolationLevel = Transaction.IsolationLevel.REPEATABLE_READ)
     public void update(Long id, RequestGiftCertificateDto dto) {
-        create(dto);
+        checkDto(dto);
 
         final LocalDateTime currentDate = LocalDateTime.now();
         final GiftCertificate currentGiftCertificate = repository.findById(id)
-                .map(repository::loadTags)
                 .orElseThrow(() -> new GiftCertificateNotFoundException(id));
         final List<Tag> currentTags = currentGiftCertificate.getTags();
         final GiftCertificate updatedCertificate = mapper.requestGiftCertificateDtoToGiftCertificate(dto);
@@ -97,6 +96,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transaction
     public void delete(Long id) {
         repository.delete(id);
     }
