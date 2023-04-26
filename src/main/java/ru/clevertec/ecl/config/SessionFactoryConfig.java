@@ -25,6 +25,15 @@ public class SessionFactoryConfig {
     @Value("${spring.hibernate.connection.driver}")
     private String driver;
 
+    @Value("${spring.hibernate.show_sql}")
+    private String showSql;
+
+    @Value("${spring.hibernate.format_sql}")
+    private String formatSql;
+
+    @Value("${spring.hibernate.hikari.maximumPoolSize}")
+    private String maximumPoolSize;
+
     @Bean
     public SessionFactory sessionFactory() {
         return new org.hibernate.cfg.Configuration()
@@ -33,10 +42,10 @@ public class SessionFactoryConfig {
                 .setProperty("hibernate.connection.username", username)
                 .setProperty("hibernate.connection.password", password)
                 .setProperty("hibernate.dialect", dialect)
-                .setProperty("hibernate.hikari.maximumPoolSize", "10")
+                .setProperty("hibernate.show_sql", showSql)
+                .setProperty("hibernate.format_sql", formatSql)
+                .setProperty("hibernate.hikari.maximumPoolSize", maximumPoolSize)
                 .setProperty("hibernate.connection.provider_class", "org.hibernate.hikaricp.internal.HikariCPConnectionProvider")
-                .setProperty("hibernate.show_sql", "true")
-                .setProperty("hibernate.format_sql", "true")
                 .setProperty("hibernate.current_session_context_class", "thread")
                 .addAnnotatedClass(Tag.class)
                 .addAnnotatedClass(GiftCertificate.class)
