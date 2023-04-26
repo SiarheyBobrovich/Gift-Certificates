@@ -1,7 +1,8 @@
 package ru.clevertec.ecl.dao.impl;
 
+import org.hibernate.SessionFactory;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.util.PostgresTestContainer;
@@ -9,15 +10,23 @@ import ru.clevertec.ecl.util.PostgresTestContainer;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class HibernateTagRepositoryTest extends PostgresTestContainer {
 
     private HibernateTagRepository repository;
+    private SessionFactory sessionFactory;
 
     @BeforeEach
     void setUp() {
-        repository = new HibernateTagRepository(sessionFactory());
+        sessionFactory = sessionFactory();
+        sessionFactory.getCurrentSession().getTransaction().begin();
+        repository = new HibernateTagRepository(sessionFactory);
+    }
+
+    @AfterEach
+    void close() {
+        sessionFactory.close();
     }
 
     @Test

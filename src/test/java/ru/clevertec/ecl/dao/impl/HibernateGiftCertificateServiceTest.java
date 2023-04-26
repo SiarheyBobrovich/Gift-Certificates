@@ -25,6 +25,7 @@ class HibernateGiftCertificateServiceTest extends PostgresTestContainer {
     @BeforeEach
     void setUp() {
         sessionFactory = sessionFactory();
+        sessionFactory.getCurrentSession().getTransaction().begin();
         repository = new HibernateGiftCertificateRepository(sessionFactory);
     }
 

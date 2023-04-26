@@ -1,6 +1,7 @@
 package ru.clevertec.ecl.util;
 
 import lombok.Builder;
+import lombok.Getter;
 import ru.clevertec.ecl.data.gift_certificate.RequestGiftCertificateDto;
 import ru.clevertec.ecl.data.gift_certificate.ResponseGiftCertificateDto;
 import ru.clevertec.ecl.data.tag.RequestTagDto;
@@ -13,7 +14,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@Builder
+@Builder(toBuilder = true)
+@Getter
 public class CertificateBuilder {
 
     @Builder.Default
