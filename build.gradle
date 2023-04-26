@@ -5,7 +5,7 @@ plugins {
     id 'io.freefair.lombok' version '8.0.1'
 }
 
-version '0.0.1'
+version '1.0.0'
 group = 'ru.clevertec.ecl'
 sourceCompatibility = JavaVersion.VERSION_17
 
