@@ -1,7 +1,10 @@
 package ru.clevertec.ecl.util;
 
+import lombok.Getter;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -9,9 +12,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.clevertec.ecl.entity.GiftCertificate;
 import ru.clevertec.ecl.entity.Tag;
 
-
 @Testcontainers
-public class PostgresTestContainer {
+public class StaticPostgresTestContainer {
 
     @Container
     private static final JdbcDatabaseContainer<?> jdbcDatabaseContainer = new PostgreSQLContainer<>("postgres:15.1")

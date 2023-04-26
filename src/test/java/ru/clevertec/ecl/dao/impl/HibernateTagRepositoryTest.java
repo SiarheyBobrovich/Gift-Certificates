@@ -5,14 +5,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.clevertec.ecl.entity.Tag;
-import ru.clevertec.ecl.util.PostgresTestContainer;
+import ru.clevertec.ecl.util.StaticPostgresTestContainer;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class HibernateTagRepositoryTest extends PostgresTestContainer {
+class HibernateTagRepositoryTest extends StaticPostgresTestContainer {
 
     private HibernateTagRepository repository;
     private SessionFactory sessionFactory;
