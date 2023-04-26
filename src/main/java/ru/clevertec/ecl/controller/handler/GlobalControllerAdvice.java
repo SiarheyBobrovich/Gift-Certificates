@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.clevertec.ecl.exception.AbstractValidationException;
 import ru.clevertec.ecl.exception.EntityNotFoundException;
+import ru.clevertec.ecl.exception.FilterException;
 
 import java.util.List;
 
@@ -16,6 +17,13 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler()
     public ResponseEntity<Error> handleEntityNotFoundException(EntityNotFoundException e) {
+        log.info(e.getMessage());
+        Error error = new Error(e.getMessage(), e.getCode());
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler()
+    public ResponseEntity<Error> handleFilterException(FilterException e) {
         log.info(e.getMessage());
         Error error = new Error(e.getMessage(), e.getCode());
         return ResponseEntity.badRequest().body(error);

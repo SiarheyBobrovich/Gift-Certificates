@@ -3,6 +3,7 @@ package ru.clevertec.ecl.pageable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import ru.clevertec.ecl.exception.FilterException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,15 @@ public class Filter {
         if (Objects.isNull(sort)) {
             return;
         }
+
+        boolean isNameOrCreateDate = sort.stream()
+                .allMatch(s -> s.matches("^name(_((asc)|(desc)))?") ||
+                        s.matches("^createDate(_((asc)|(desc)))?"));
+
+        if (!isNameOrCreateDate) {
+            throw new FilterException("sort param must be 'name[_asc/_desc] or createDate[_asc/_desc]'");
+        }
+
         sort.stream()
                 .map(x -> x.split("_"))
                 .forEach(x -> {
