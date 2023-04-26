@@ -2,7 +2,6 @@ package ru.clevertec.ecl.dao.impl;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.dao.GiftCertificateRepository;
@@ -87,14 +86,15 @@ public class HibernateGiftCertificateRepository extends AbstractHibernateReposit
     @Override
     public GiftCertificate save(GiftCertificate giftCertificate) {
         Session session = sessionFactory.getCurrentSession();
-        loadTags(giftCertificate, session);
+        loadTags(giftCertificate);
         session.persist(giftCertificate);
 
         return giftCertificate;
     }
 
-    private void loadTags(GiftCertificate giftCertificate, Session session) {
+    private void loadTags(GiftCertificate giftCertificate) {
         final List<Tag> tags = giftCertificate.getTags();
+        Session session = sessionFactory.getCurrentSession();
         if (Objects.nonNull(tags)) {
             Query<Tag> query = session.createNamedQuery("tagByName", Tag.class);
             List<Tag> currentTags = tags.stream()

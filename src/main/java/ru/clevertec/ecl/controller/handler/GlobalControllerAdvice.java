@@ -47,7 +47,7 @@ public class GlobalControllerAdvice {
     @ExceptionHandler
     public ResponseEntity<Error> handleThrowable(Throwable e) {
         log.info(e.getMessage());
-        Error error = new Error(e.getMessage(), 500);
+        Error error = new Error("Please try again letter", 500);
         return ResponseEntity.internalServerError().body(error);
     }
 

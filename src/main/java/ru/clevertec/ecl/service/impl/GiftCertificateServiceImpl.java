@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 import ru.clevertec.ecl.dao.GiftCertificateRepository;
+import ru.clevertec.ecl.dao.TagRepository;
 import ru.clevertec.ecl.data.gift_certificate.RequestGiftCertificateDto;
 import ru.clevertec.ecl.data.gift_certificate.ResponseGiftCertificateDto;
 import ru.clevertec.ecl.entity.GiftCertificate;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ import java.util.Set;
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertificateRepository repository;
+    private final TagRepository tagRepository;
     private final GiftCertificateMapper mapper = Mappers.getMapper(GiftCertificateMapper.class);
 
     private final Validator validator;
@@ -76,14 +79,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         final GiftCertificate currentGiftCertificate = repository.findById(id)
                 .orElseThrow(() -> new GiftCertificateNotFoundException(id));
         final List<Tag> currentTags = currentGiftCertificate.getTags();
+        final Set<String> currentTagNames = currentTags.stream().map(Tag::getName).collect(Collectors.toSet());
         final GiftCertificate updatedCertificate = mapper.requestGiftCertificateDtoToGiftCertificate(dto);
         final List<Tag> updatedTags = updatedCertificate.getTags();
 
         if (Objects.nonNull(updatedTags)) {
             updatedCertificate.getTags().stream()
-                    .filter(tag -> currentTags.stream()
-                            .map(Tag::getName)
-                            .noneMatch(x -> x.equals(tag.getName())))
+                    .filter(tag -> !currentTagNames.contains(tag.getName()))
+                    .map(tag -> tagRepository.findTagByName(tag.getName())
+                            .orElse(tag))
                     .forEach(currentTags::add);
         }
 

@@ -9,4 +9,5 @@ import java.util.List;
 public interface GiftCertificateService extends CrudService<RequestGiftCertificateDto, ResponseGiftCertificateDto, Long> {
 
     List<ResponseGiftCertificateDto> findByPartOfNameOrDescription(Filter filter);
+
 }

@@ -45,8 +45,6 @@ public abstract class AbstractHibernateRepository<T, ID extends Serializable> im
     @Override
     public Optional<T> findById(ID id) {
         Session session = sessionFactory.getCurrentSession();
-        Transaction transaction = session.getTransaction();
-
         return session.byId(getClassType()).loadOptional(id);
     }
 
