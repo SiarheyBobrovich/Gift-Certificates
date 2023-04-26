@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/clevertec
+    username: postgres
+    password: 172143
+  hibernate:
+    format_sql: true
+    show_sql: true

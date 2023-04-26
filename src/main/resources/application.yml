@@ -1,0 +1,9 @@
+spring:
+  hibernate:
+    dialect: org.hibernate.dialect.PostgreSQL10Dialect
+    connection:
+      driver: org.postgresql.Driver
+    format_sql: false
+    show_sql: false
+    hikari:
+      maximumPoolSize: 8
