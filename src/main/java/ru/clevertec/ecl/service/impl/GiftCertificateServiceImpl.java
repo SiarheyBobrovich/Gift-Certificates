@@ -61,10 +61,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
         GiftCertificate giftCertificate = mapper.requestGiftCertificateDtoToGiftCertificate(dto);
 
-        LocalDateTime now = LocalDateTime.now();
-        giftCertificate.setCreateDate(now);
-        giftCertificate.setLastUpdateDate(now);
-
         repository.save(giftCertificate);
     }
 
@@ -80,7 +76,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 .map(Tag::getName)
                 .collect(Collectors.toSet());
 
-        currentCertificate.setLastUpdateDate(LocalDateTime.now());
         currentCertificate.setName(dto.name());
         currentCertificate.setDescription(dto.description());
         currentCertificate.setPrice(dto.price());

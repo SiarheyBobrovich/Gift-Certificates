@@ -55,4 +55,16 @@ public class GiftCertificate implements Serializable {
         }
         tags.add(tag);
     }
+
+    @PrePersist
+    public void persistDate() {
+        LocalDateTime now = LocalDateTime.now();
+        setCreateDate(now);
+        setLastUpdateDate(now);
+    }
+
+    @PreUpdate
+    public void updateDate() {
+        setLastUpdateDate(LocalDateTime.now());
+    }
 }

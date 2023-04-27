@@ -65,9 +65,18 @@ public class HibernateGiftCertificateRepository extends AbstractHibernateReposit
     @Override
     public GiftCertificate update(GiftCertificate entity) {
         Session session = sessionFactory.getCurrentSession();
+        Query<Tag> query = session.createNamedQuery("tagByName", Tag.class);
+        List<Tag> tags = entity.getTags().stream().toList();
         session.detach(entity);
-
-        loadTags(entity);
+        tags.forEach(tag -> {
+            if (Objects.nonNull(tag.getId())) {
+                return;
+            }
+            query.setParameter("name", tag.getName())
+                    .getResultStream()
+                    .findFirst()
+                    .ifPresent(cTag -> tag.setId(cTag.getId()));
+        });
         session.merge(entity);
         return entity;
     }
@@ -86,10 +95,13 @@ public class HibernateGiftCertificateRepository extends AbstractHibernateReposit
         final List<Tag> tags = giftCertificate.getTags();
         if (Objects.nonNull(tags)) {
             Query<Tag> query = session.createNamedQuery("tagByName", Tag.class);
-            tags.forEach(tag -> query.setParameter("name", tag.getName())
-                    .getResultStream()
-                    .findFirst()
-                    .ifPresent(cTag -> tag.setId(cTag.getId())));
+            List<Tag> currentTags = tags.stream()
+                    .map(tag -> query.setParameter("name", tag.getName())
+                            .getResultStream()
+                            .findFirst()
+                            .orElse(tag))
+                    .toList();
+            giftCertificate.setTags(currentTags);
         }
     }
 

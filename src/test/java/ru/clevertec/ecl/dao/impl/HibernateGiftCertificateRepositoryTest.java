@@ -102,10 +102,9 @@ class HibernateGiftCertificateRepositoryTest extends StaticPostgresTestContainer
                 .price(BigDecimal.valueOf(5.55))
                 .createDate(now)
                 .lastUpdateDate(now)
-                .tags(List.of(
-                        Tag.builder().name("#1").build(),
-                        Tag.builder().name("#2 tag").build()))
                 .build();
+        certificate.addTag(Tag.builder().name("#1").build());
+        certificate.addTag(Tag.builder().name("#2 tag").build());
 
         GiftCertificate save = repository.save(certificate);
         Long id = save.getId();
@@ -124,6 +123,25 @@ class HibernateGiftCertificateRepositoryTest extends StaticPostgresTestContainer
         String name = updated.getName();
 
         assertThat(name).isEqualTo(updatedName);
+    }
+
+    @Test
+    void checkUpdateTags() {
+        Long id = 3L;
+        GiftCertificate giftCertificate = repository.findById(id).orElseThrow();
+        giftCertificate.addTag(Tag.builder().name("#14").build());
+
+        List<String> expected = giftCertificate.getTags().stream()
+                .map(Tag::getName)
+                .toList();
+
+        repository.update(giftCertificate);
+        GiftCertificate updated = repository.findById(id).orElseThrow();
+        List<String> tags = updated.getTags().stream()
+                .map(Tag::getName)
+                .toList();
+
+        assertThat(tags).isEqualTo(expected);
     }
 
     @Test
