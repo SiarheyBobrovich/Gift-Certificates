@@ -10,6 +10,7 @@ import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.pageable.Filter;
 import ru.clevertec.ecl.pageable.Order;
 
+import javax.persistence.criteria.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -23,62 +24,59 @@ public class HibernateGiftCertificateRepository extends AbstractHibernateReposit
 
     @Override
     public List<GiftCertificate> findByFilter(Filter filter) {
-        String selectHQL = """
-                SELECT DISTINCT gc FROM GiftCertificate gc
-                JOIN gc.tags t
-                """;
         String tagName = filter.getTagName();
         String part = filter.getPartOfNameOrDescription();
-        String orderBy = getOrderBy(filter.getSortFieldName());
-
-        String where = where(tagName, part);
+        Map<String, Order> fieldNameOrder = filter.getSortFieldName();
+        String partLike = String.format("%%%s%%", part);
+        boolean isTagName = Objects.nonNull(tagName);
+        boolean isPart = Objects.nonNull(part);
+        boolean isOrder = !fieldNameOrder.isEmpty();
 
         Session session = sessionFactory.getCurrentSession();
-        Query<GiftCertificate> query = session.createQuery(selectHQL + where + orderBy
-                , GiftCertificate.class);
-        if (Objects.nonNull(part)) {
-            query.setParameter("part", "%" + part + "%");
-        }
-        if (Objects.nonNull(tagName)) {
-            query.setParameter("tagName", tagName);
-        }
+        CriteriaBuilder builder = sessionFactory.getCriteriaBuilder();
 
-        List<GiftCertificate> resultList = query.getResultList();
-        return resultList;
-    }
+        CriteriaQuery<GiftCertificate> certQuery = builder.createQuery(GiftCertificate.class);
+        Root<GiftCertificate> gcRoot = certQuery.from(GiftCertificate.class);
+        ListJoin<Object, Object> tagsJoin = gcRoot.joinList("tags", JoinType.LEFT);
 
-    private String where(String tagName, String partOfNameOrDescription) {
-        StringBuilder whereBuilder = new StringBuilder();
-        if (Objects.nonNull(tagName)) {
-            whereBuilder.append("""
-                    t.name = :tagName
-                    """);
-        }
-        if (Objects.nonNull(partOfNameOrDescription)) {
-            whereBuilder.append(whereBuilder.isEmpty() ? "" : "AND\n")
-                    .append("""
-                            (gc.name LIKE :part OR
-                            gc.description LIKE :part)
-                            """);
-        }
-        return whereBuilder.isEmpty() ? "" : whereBuilder.insert(0, "WHERE ").toString();
-    }
+        Predicate nameOrDescriptionPredicate = builder.or(
+                builder.like(gcRoot.get("name"), partLike),
+                builder.like(gcRoot.get("description"), partLike));
+        Predicate tagNamePredicate = builder.equal(tagsJoin.get("name"), tagName);
 
-    private String getOrderBy(Map<String, Order> fields) {
-        if (fields.isEmpty()) {
-            return "";
-        }
-        return fields.entrySet().stream()
-                .map(entry -> String.join(" ", entry.getKey(), entry.getValue().name()))
-                .map(x -> "gc." + x)
-                .reduce((x1, x2) -> String.join(", ", x1, x2))
-                .map(x -> "ORDER BY " + x)
-                .orElse("");
+        //Where section
+        certQuery = isTagName && isPart ? certQuery.where(builder.and(tagNamePredicate, nameOrDescriptionPredicate)) :
+                isTagName ? certQuery.where(tagNamePredicate) :
+                        isPart ? certQuery.where(nameOrDescriptionPredicate) :
+                                certQuery;
+        certQuery = isOrder ? certQuery.orderBy(fieldNameOrder.entrySet().stream()
+                .map(fieldOrder -> {
+                    String fieldName = fieldOrder.getKey();
+                    Order order = fieldOrder.getValue();
+                    return Order.ASC.equals(order) ?
+                            builder.asc(gcRoot.get(fieldName)) : builder.desc(gcRoot.get(fieldName));
+                }).toList()) : certQuery;
+
+        certQuery.select(gcRoot);
+
+        return session.createQuery(certQuery).getResultList();
     }
 
     @Override
     public GiftCertificate update(GiftCertificate entity) {
         Session session = sessionFactory.getCurrentSession();
+        Query<Tag> query = session.createNamedQuery("tagByName", Tag.class);
+        List<Tag> tags = entity.getTags().stream().toList();
+        session.detach(entity);
+        tags.forEach(tag -> {
+            if (Objects.nonNull(tag.getId())) {
+                return;
+            }
+            query.setParameter("name", tag.getName())
+                    .getResultStream()
+                    .findFirst()
+                    .ifPresent(cTag -> tag.setId(cTag.getId()));
+        });
         session.merge(entity);
         return entity;
     }
@@ -93,8 +91,8 @@ public class HibernateGiftCertificateRepository extends AbstractHibernateReposit
     }
 
     private void loadTags(GiftCertificate giftCertificate) {
-        final List<Tag> tags = giftCertificate.getTags();
         Session session = sessionFactory.getCurrentSession();
+        final List<Tag> tags = giftCertificate.getTags();
         if (Objects.nonNull(tags)) {
             Query<Tag> query = session.createNamedQuery("tagByName", Tag.class);
             List<Tag> currentTags = tags.stream()

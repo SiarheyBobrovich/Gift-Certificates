@@ -1,14 +1,11 @@
 package ru.clevertec.ecl.dao.impl;
 
 import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import ru.clevertec.ecl.entity.GiftCertificate;
 import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.pageable.Filter;
-import ru.clevertec.ecl.util.PostgresTestContainer;
+import ru.clevertec.ecl.util.StaticPostgresTestContainer;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,7 +14,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class HibernateGiftCertificateServiceTest extends PostgresTestContainer {
+class HibernateGiftCertificateRepositoryTest extends StaticPostgresTestContainer {
 
     private HibernateGiftCertificateRepository repository;
     private SessionFactory sessionFactory;
@@ -105,10 +102,9 @@ class HibernateGiftCertificateServiceTest extends PostgresTestContainer {
                 .price(BigDecimal.valueOf(5.55))
                 .createDate(now)
                 .lastUpdateDate(now)
-                .tags(List.of(
-                        Tag.builder().name("#1").build(),
-                        Tag.builder().name("#2 tag").build()))
                 .build();
+        certificate.addTag(Tag.builder().name("#1").build());
+        certificate.addTag(Tag.builder().name("#2 tag").build());
 
         GiftCertificate save = repository.save(certificate);
         Long id = save.getId();
@@ -130,6 +126,25 @@ class HibernateGiftCertificateServiceTest extends PostgresTestContainer {
     }
 
     @Test
+    void checkUpdateTags() {
+        Long id = 3L;
+        GiftCertificate giftCertificate = repository.findById(id).orElseThrow();
+        giftCertificate.addTag(Tag.builder().name("#14").build());
+
+        List<String> expected = giftCertificate.getTags().stream()
+                .map(Tag::getName)
+                .toList();
+
+        repository.update(giftCertificate);
+        GiftCertificate updated = repository.findById(id).orElseThrow();
+        List<String> tags = updated.getTags().stream()
+                .map(Tag::getName)
+                .toList();
+
+        assertThat(tags).isEqualTo(expected);
+    }
+
+    @Test
     void checkDelete() {
         repository.delete(4L);
         Optional<GiftCertificate> expected = repository.findById(4L);
@@ -137,88 +152,92 @@ class HibernateGiftCertificateServiceTest extends PostgresTestContainer {
         assertThat(expected).isEmpty();
     }
 
-    @Test
-    void checkFindById() {
-        GiftCertificate current = repository.findById(1L).orElseThrow();
+    @Nested
+    class Find {
 
-        GiftCertificate expected = GiftCertificate.builder()
-                .id(1L)
-                .name("first")
-                .description("one certificate")
-                .price(BigDecimal.valueOf(1.11))
-                .duration(11)
-                .createDate(current.getCreateDate())
-                .lastUpdateDate(current.getLastUpdateDate())
-                .build();
-        current.setTags(null);
+        @Test
+        void checkFindById() {
+            GiftCertificate current = repository.findById(1L).orElseThrow();
 
-        assertThat(current).isEqualTo(expected);
-    }
+            GiftCertificate expected = GiftCertificate.builder()
+                    .id(1L)
+                    .name("first")
+                    .description("one certificate")
+                    .price(BigDecimal.valueOf(1.11))
+                    .duration(11)
+                    .createDate(current.getCreateDate())
+                    .lastUpdateDate(current.getLastUpdateDate())
+                    .build();
+            current.setTags(null);
 
-    @Test
-    void checkFindAll() {
-        List<Long> ids = repository.findAll().stream()
-                .map(GiftCertificate::getId)
-                .toList();
+            assertThat(current).isEqualTo(expected);
+        }
 
-        assertThat(ids).containsAll(List.of(1L, 2L, 3L));
-    }
+        @Test
+        void checkFindAll() {
+            List<Long> ids = repository.findAll().stream()
+                    .map(GiftCertificate::getId)
+                    .toList();
 
-    @Test
-    @DisplayName("find by Tag '#1'")
-    void checkFindByPart() {
-        List<Long> expectedIdList = List.of(1L);
-        Filter firstTag = Filter.builder().tagName("#5").build();
+            assertThat(ids).containsAll(List.of(1L, 2L, 3L));
+        }
 
-        List<GiftCertificate> byPart = repository.findByFilter(firstTag);
-        List<Long> actualIdList = byPart.stream().map(GiftCertificate::getId).toList();
+        @Test
+        @DisplayName("find by Tag '#5'")
+        void checkFindByPart() {
+            List<Long> expectedIdList = List.of(1L);
+            Filter firstTag = Filter.builder().tagName("#5").build();
 
-        assertThat(actualIdList).isEqualTo(expectedIdList);
-    }
+            List<GiftCertificate> byPart = repository.findByFilter(firstTag);
+            List<Long> actualIdList = byPart.stream().map(GiftCertificate::getId).toList();
 
-    @Test
-    @DisplayName("find by Tag '#2'")
-    void checkFindByPartTag() {
-        List<Long> expectedId = List.of(1L, 2L);
+            assertThat(actualIdList).isEqualTo(expectedIdList);
+        }
 
-        Filter secondTag = Filter.builder().tagName("#6").build();
-        List<GiftCertificate> byPart = repository.findByFilter(secondTag);
-        List<Long> actualIdList = byPart.stream().map(GiftCertificate::getId).toList();
+        @Test
+        @DisplayName("find by Tag '#6'")
+        void checkFindByPartTag() {
+            List<Long> expectedId = List.of(1L, 2L);
 
-        assertThat(actualIdList).isEqualTo(expectedId);
-    }
+            Filter secondTag = Filter.builder().tagName("#6").build();
+            List<GiftCertificate> byPart = repository.findByFilter(secondTag);
+            List<Long> actualIdList = byPart.stream().map(GiftCertificate::getId).toList();
 
-    @Test
-    @DisplayName("find by Tag '#5', order by")
-    void checkFindByPartTagOrderBy() {
-        List<Long> expectedId = List.of(1L, 2L);
+            assertThat(actualIdList).isEqualTo(expectedId);
+        }
 
-        Filter secondTag = Filter.builder().tagName("#6").build();
+        @Test
+        @DisplayName("find by Tag '#6', order by")
+        void checkFindByPartTagOrderBy() {
+            List<Long> expectedId = List.of(1L, 2L);
 
-        List<String> sort = List.of("name_asc", "createDate_desc");
-        secondTag.addSortFieldName(sort);
+            Filter secondTag = Filter.builder().tagName("#6").build();
 
-        List<GiftCertificate> byPart = repository.findByFilter(secondTag);
-        List<Long> actualIdList = byPart.stream().map(GiftCertificate::getId).toList();
+            List<String> sort = List.of("name_asc", "createDate_desc");
+            secondTag.addSortFieldName(sort);
 
-        assertThat(actualIdList).isEqualTo(expectedId);
-    }
+            List<GiftCertificate> byPart = repository.findByFilter(secondTag);
+            List<Long> actualIdList = byPart.stream().map(GiftCertificate::getId).toList();
 
-    @Test
-    @DisplayName("find by Tag '#2', And part 'first'")
-    void checkFindByPartTagAndPart() {
-        List<Long> expectedId = List.of(1L);
+            assertThat(actualIdList).isEqualTo(expectedId);
+        }
 
-        Filter secondTag = Filter.builder().tagName("#2")
-                .partOfNameOrDescription("first")
-                .build();
+        @Test
+        @DisplayName("find by Tag '#2', And part 'first'")
+        void checkFindByPartTagAndPart() {
+            List<Long> expectedId = List.of(1L);
 
-        List<String> sort = List.of("name_asc", "createDate_desc");
-        secondTag.addSortFieldName(sort);
+            Filter secondTag = Filter.builder().tagName("#2")
+                    .partOfNameOrDescription("first")
+                    .build();
 
-        List<GiftCertificate> byPart = repository.findByFilter(secondTag);
-        List<Long> actualIdList = byPart.stream().map(GiftCertificate::getId).toList();
+            List<String> sort = List.of("name_asc", "createDate_desc");
+            secondTag.addSortFieldName(sort);
 
-        assertThat(actualIdList).isEqualTo(expectedId);
+            List<GiftCertificate> byPart = repository.findByFilter(secondTag);
+            List<Long> actualIdList = byPart.stream().map(GiftCertificate::getId).toList();
+
+            assertThat(actualIdList).isEqualTo(expectedId);
+        }
     }
 }

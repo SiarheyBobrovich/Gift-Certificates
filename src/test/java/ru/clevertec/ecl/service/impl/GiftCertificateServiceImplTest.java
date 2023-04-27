@@ -167,55 +167,23 @@ class GiftCertificateServiceImplTest {
         }
 
         @Test
-        void checkCreateCreateDateNotNull() {
+        void checkCreateCreateDateIsNull() {
             CertificateBuilder build = CertificateBuilder.builder().build();
             RequestGiftCertificateDto requestDto = build.getRequestDto();
 
             service.create(requestDto);
 
-            verify(repository).save(argThat(x -> x.getCreateDate() != null));
+            verify(repository).save(argThat(x -> Objects.isNull(x.getCreateDate())));
         }
 
         @Test
-        void checkCreateCreateDateNearNow() {
-            CertificateBuilder build = CertificateBuilder.builder().build();
-            RequestGiftCertificateDto requestDto = build.getRequestDto();
-
-            LocalDateTime before = LocalDateTime.now();
-            service.create(requestDto);
-            LocalDateTime after = LocalDateTime.now();
-
-            verify(repository).save(argThat(x -> {
-                LocalDateTime createDate = x.getCreateDate();
-                return createDate.isEqual(LocalDateTime.now()) ||
-                        (createDate.isAfter(before) && createDate.isBefore(after));
-            }));
-        }
-
-        @Test
-        void checkCreateLastUpdateDateNotNull() {
+        void checkCreateLastUpdateDateIsNull() {
             CertificateBuilder build = CertificateBuilder.builder().build();
             RequestGiftCertificateDto requestDto = build.getRequestDto();
 
             service.create(requestDto);
 
-            verify(repository).save(argThat(x -> x.getLastUpdateDate() != null));
-        }
-
-        @Test
-        void checkCreateLastUpdateDateNearNow() {
-            CertificateBuilder build = CertificateBuilder.builder().build();
-            RequestGiftCertificateDto requestDto = build.getRequestDto();
-
-            LocalDateTime before = LocalDateTime.now();
-            service.create(requestDto);
-            LocalDateTime after = LocalDateTime.now();
-
-            verify(repository).save(argThat(x -> {
-                LocalDateTime lastUpdateDate = x.getLastUpdateDate();
-                return lastUpdateDate.isEqual(LocalDateTime.now()) ||
-                        (lastUpdateDate.isAfter(before) && lastUpdateDate.isBefore(after));
-            }));
+            verify(repository).save(argThat(x -> Objects.isNull(x.getLastUpdateDate())));
         }
 
         @Test
@@ -268,7 +236,7 @@ class GiftCertificateServiceImplTest {
 
             service.update(id, builder.getRequestDto());
 
-            verify(repository).update(argThat(argument -> argument.getLastUpdateDate().isAfter(expected)));
+            verify(repository).update(argThat(argument -> argument.getLastUpdateDate().isEqual(expected)));
         }
 
         @Test
