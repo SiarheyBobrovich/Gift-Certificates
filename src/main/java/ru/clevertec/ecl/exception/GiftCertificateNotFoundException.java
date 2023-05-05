@@ -6,6 +6,7 @@ public class GiftCertificateNotFoundException extends EntityNotFoundException {
         super(id);
     }
 
+    @Override
     public int getCode() {
         return 404002;
     }

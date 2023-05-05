@@ -1,7 +1,6 @@
 package ru.clevertec.ecl.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 import ru.clevertec.ecl.data.tag.RequestTagDto;
 import ru.clevertec.ecl.data.tag.ResponseTagDto;
 import ru.clevertec.ecl.entity.Tag;
@@ -16,5 +15,8 @@ public interface TagMapper {
     @Mapping(target = "id", ignore = true)
     Tag requestTagDtoToTag(RequestTagDto dto);
 
+    @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
     List<ResponseTagDto> listTagToListResponseTagDto(List<Tag> tags);
+
+    Tag responseTagToTag(ResponseTagDto tagDto);
 }

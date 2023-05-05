@@ -1,6 +1,8 @@
 package ru.clevertec.ecl.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import ru.clevertec.ecl.data.tag.ResponseTagDto;
 
 public interface CrudService<REQUEST, RESPONSE, ID> {
 
@@ -17,7 +19,7 @@ public interface CrudService<REQUEST, RESPONSE, ID> {
      *
      * @return List of mapped entity
      */
-    List<RESPONSE> findAll();
+    Page<RESPONSE> findAll(Pageable pageable);
 
     /**
      * Create an entity by REQUEST

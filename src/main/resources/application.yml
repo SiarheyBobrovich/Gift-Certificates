@@ -1,9 +1,9 @@
 spring:
-  hibernate:
-    dialect: org.hibernate.dialect.PostgreSQL10Dialect
-    connection:
-      driver: org.postgresql.Driver
-    format_sql: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    open-in-view: false
     show_sql: false
-    hikari:
-      maximumPoolSize: 8
+    properties:
+      hibernate:
+        format_sql: false

@@ -1,53 +1,50 @@
 package ru.clevertec.ecl.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.clevertec.ecl.controller.api.GiftCertificateController;
 import ru.clevertec.ecl.data.gift_certificate.RequestGiftCertificateDto;
 import ru.clevertec.ecl.data.gift_certificate.ResponseGiftCertificateDto;
 import ru.clevertec.ecl.pageable.Filter;
+import ru.clevertec.ecl.pageable.Patch;
 import ru.clevertec.ecl.service.GiftCertificateService;
-
-import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/certificates")
-public class GiftCertificateControllerImpl implements ru.clevertec.ecl.controller.api.GiftCertificateController {
+@Validated
+public class GiftCertificateControllerImpl implements GiftCertificateController {
 
     private final GiftCertificateService service;
 
     @Override
     @GetMapping(path = "/{id}")
-    public ResponseEntity<ResponseGiftCertificateDto> getByIdGiftCertificate(@PathVariable Long id) {
+    public ResponseEntity<ResponseGiftCertificateDto> getByFilter(@PathVariable Long id) {
         ResponseGiftCertificateDto giftCertificateDto = service.findById(id);
         return ResponseEntity.ok().body(giftCertificateDto);
     }
 
     @Override
     @GetMapping(path = "/findBy")
-    public ResponseEntity<List<ResponseGiftCertificateDto>> getByIdGiftCertificate(
-            @RequestParam(required = false) String part,
-            @RequestParam(required = false) List<String> sort,
-            @RequestParam(required = false) String tag
+    public ResponseEntity<Page<ResponseGiftCertificateDto>> getByFilter(@PageableDefault(20) Pageable pageable,
+                                                                        Filter filter
     ) {
-        Filter build = Filter.builder()
-                .tagName(tag)
-                .partOfNameOrDescription(part)
-                .build();
-        build.addSortFieldName(sort);
-
-        List<ResponseGiftCertificateDto> giftCertificateDtoList = service.findByFilter(build);
+        Page<ResponseGiftCertificateDto> giftCertificateDtoList = service.findByFilter(filter, pageable);
 
         return ResponseEntity.ok().body(giftCertificateDtoList);
     }
 
     @Override
     @GetMapping
-    public ResponseEntity<List<ResponseGiftCertificateDto>> getAllGiftCertificates() {
-        List<ResponseGiftCertificateDto> giftCertificateDtoList = service.findAll();
+    public ResponseEntity<Page<ResponseGiftCertificateDto>> getAllGiftCertificates(@PageableDefault(20) Pageable pageable) {
+        Page<ResponseGiftCertificateDto> giftCertificateDtoList = service.findAll(pageable);
         return ResponseEntity.ok().body(giftCertificateDtoList);
     }
 
@@ -71,5 +68,13 @@ public class GiftCertificateControllerImpl implements ru.clevertec.ecl.controlle
     public ResponseEntity<Void> deleteGiftCertificate(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.status(204).build();
+    }
+
+    @Override
+    @PatchMapping(path = "/{id}")
+    public ResponseEntity<Void> patchGiftCertificate(@PathVariable Long id,
+                                                     @RequestBody Patch patch) {
+        service.patch(id, patch);
+        return ResponseEntity.status(201).build();
     }
 }

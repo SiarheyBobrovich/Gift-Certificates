@@ -3,6 +3,11 @@ spring:
     url: jdbc:postgresql://localhost:5432/clevertec
     username: postgres
     password: 172143
-  hibernate:
-    format_sql: true
+  jpa:
     show_sql: true
+    properties:
+      hibernate:
+        format_sql: true
+logging:
+  level:
+    web: debug

@@ -2,8 +2,8 @@ package ru.clevertec.ecl.data.gift_certificate;
 
 import ru.clevertec.ecl.data.tag.RequestTagDto;
 
-import javax.validation.Valid;
-import javax.validation.constraints.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.List;
 

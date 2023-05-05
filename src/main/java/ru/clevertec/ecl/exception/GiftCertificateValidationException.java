@@ -1,6 +1,6 @@
 package ru.clevertec.ecl.exception;
 
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 import java.util.Set;
 
 public class GiftCertificateValidationException extends AbstractValidationException {

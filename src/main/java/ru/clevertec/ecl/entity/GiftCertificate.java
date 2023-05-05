@@ -1,8 +1,9 @@
 package ru.clevertec.ecl.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.Hibernate;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,8 +13,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@EqualsAndHashCode
-@ToString(exclude = "tags")
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -43,6 +43,8 @@ public class GiftCertificate implements Serializable {
     @Column(name = "last_update_date", nullable = false)
     private LocalDateTime lastUpdateDate;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(schema = "certificate", name = "gc_tag",
             joinColumns = @JoinColumn(name = "gc_id", referencedColumnName = "id"),
@@ -66,5 +68,18 @@ public class GiftCertificate implements Serializable {
     @PreUpdate
     public void updateDate() {
         setLastUpdateDate(LocalDateTime.now());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        GiftCertificate that = (GiftCertificate) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

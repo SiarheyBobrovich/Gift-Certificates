@@ -1,17 +1,28 @@
 package ru.clevertec.ecl.dao;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.clevertec.ecl.entity.GiftCertificate;
-import ru.clevertec.ecl.pageable.Filter;
 
-import java.util.List;
-
-public interface GiftCertificateRepository extends CrudRepository<GiftCertificate, Long> {
+public interface GiftCertificateRepository extends JpaRepository<GiftCertificate, Long> {
 
     /**
-     * Find certificate by filter
-     * @param filter search options
-     * @return List of found certificates or empty list
+     * Find certificate by tag name, like name or description
+     *
+     * @param tagName           Tag name must be equal
+     * @param partOfName        part of certificate name
+     * @param partOfDescription part of certificate description
+     * @return Page of found certificates
      */
-    List<GiftCertificate> findByFilter(Filter filter);
+    Page<GiftCertificate> findByTags_NameAndNameLikeOrDescriptionLike(String tagName,
+                                                                      String partOfName,
+                                                                      String partOfDescription,
+                                                                      Pageable pageable);
+
+    Page<GiftCertificate> findByTags_Name(String name, Pageable pageable);
+
+    Page<GiftCertificate> findByNameLikeOrDescriptionLike(String partOfName, String partOfDescription, Pageable pageable);
+
 
 }
