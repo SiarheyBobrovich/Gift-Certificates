@@ -58,19 +58,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public Page<ResponseGiftCertificateDto> findByFilter(Filter filter, Pageable pageable) {
-        final Page<GiftCertificate> giftCertificates;
-        String part = filter.getPart();
-
-        if (filter.isPart() && filter.isTag()) {
-            giftCertificates = repository.findByTags_NameAndNameLikeOrDescriptionLike(
-                    filter.getTag(), part, part, pageable);
-        } else if (filter.isPart()) {
-            giftCertificates = repository.findByNameLikeOrDescriptionLike(part, part, pageable);
-        } else if (filter.isTag()) {
-            giftCertificates = repository.findByTags_Name(filter.getTag(), pageable);
-        } else {
-            giftCertificates = repository.findAll(pageable);
-        }
+        final Page<GiftCertificate> giftCertificates = repository.findByTagNameAndPartOfNameOrDescription(
+                filter.getTag(),
+                filter.getPart(),
+                pageable);
 
         return PageDto.of(giftCertificates)
                 .map(mapper::giftCertificateToResponseGiftCertificateDto);
@@ -116,7 +107,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                         .map(RequestTagDto::name)
                         .collect(Collectors.toList()));
 
-        repository.save(currentCertificate);
+        repository.saveAndFlush(currentCertificate);
     }
 
     @Override

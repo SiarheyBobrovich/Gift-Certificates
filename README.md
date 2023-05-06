@@ -142,11 +142,13 @@
               }
             ], ...
           </pre>
-    - #### GET find:
+    - #### GET findBy:
       - url: http://localhost:8080/api/v1/certificates/findBy?part=th&sort=name&tag=#3
         - params: optional
           - part: part of name/description
-          - sort: name/createDate [asc/desc] format: name/name_desc
+          - sort: name/createDate [asc/desc]
+            - format: {"name", "name,desc"}
+              - "name" == "name,asc"
           - tag: tag name
         - response:
           - status: 200
@@ -215,6 +217,46 @@
       - url: http://localhost:8080/api/v1/certificates/{{ID}}
         - response:
           - status: 204
+  - ### Users:
+    - #### GET byId:
+      - url: http://localhost:8080/api/v1/users/{{ID}}
+        - response:
+          - status: 200
+          <pre>
+            {
+                "id": 1,
+                "firstName": "Siarhey",
+                "lastName": "Bobrovich",
+                "orders": []
+            }
+          </pre>
+    - #### GET all:
+      - url: http://localhost:8080/api/v1/users?page=1&size=1
+        - params: 
+          - page - number if page
+          - size - size of page
+        - response:
+          - status: 200
+          <pre>
+            {
+                "content": [
+                    {
+                    "id": 2,
+                    "firstName": "Egor",
+                    "lastName": "Efimov",
+                    "orders": []
+                    }
+                ],
+                "size": 1,
+                "number": 1,
+                "first": false,
+                "last": true,
+                "totalPages": 2,
+                "totalElements": 2,
+                "numberOfElements": 1,
+                "empty": false
+            }
+          </pre>
 ### Errors:
   - code:
     - tags: ***01
