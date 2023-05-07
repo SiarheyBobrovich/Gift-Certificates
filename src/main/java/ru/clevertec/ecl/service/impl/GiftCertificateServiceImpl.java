@@ -1,7 +1,5 @@
 package ru.clevertec.ecl.service.impl;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
@@ -16,7 +14,6 @@ import ru.clevertec.ecl.data.tag.RequestTagDto;
 import ru.clevertec.ecl.entity.GiftCertificate;
 import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.exception.GiftCertificateNotFoundException;
-import ru.clevertec.ecl.exception.GiftCertificateValidationException;
 import ru.clevertec.ecl.mapper.GiftCertificateMapper;
 import ru.clevertec.ecl.pageable.Filter;
 import ru.clevertec.ecl.pageable.PageDto;
@@ -39,7 +36,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftCertificateRepository repository;
     private final TagNamesService tagService;
     private final GiftCertificateMapper mapper = Mappers.getMapper(GiftCertificateMapper.class);
-    private final Validator validator;
     private final Patcher<GiftCertificate> patcher;
 
     @Override
@@ -80,8 +76,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public void create(RequestGiftCertificateDto dto) {
-        checkDto(dto);
-
         GiftCertificate giftCertificate = mapper.requestGiftCertificateDtoToGiftCertificate(dto);
         List<Tag> existedTags = removeExistingTagsAndRevertThem(giftCertificate);
         giftCertificate = repository.save(giftCertificate);
@@ -92,7 +86,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void update(Long id, RequestGiftCertificateDto dto) {
-        checkDto(dto);
         GiftCertificate currentCertificate = repository.findById(id)
                 .orElseThrow(() -> new GiftCertificateNotFoundException(id));
 
@@ -114,13 +107,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     public void delete(Long id) {
         repository.deleteById(id);
-    }
-
-    private void checkDto(RequestGiftCertificateDto dto) {
-        Set<ConstraintViolation<RequestGiftCertificateDto>> validate = validator.validate(dto);
-        if (!validate.isEmpty()) {
-            throw new GiftCertificateValidationException(validate);
-        }
     }
 
     private void updateTags(GiftCertificate giftCertificate, Collection<String> tagNames) {

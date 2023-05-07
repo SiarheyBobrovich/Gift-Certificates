@@ -1,5 +1,6 @@
 package ru.clevertec.ecl.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +45,7 @@ public class TagControllerImpl implements TagController {
     @Override
     @PutMapping(path = "/{id}", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> putTag(@PathVariable Long id,
-                                       @RequestBody RequestTagDto dto) {
+                                       @RequestBody @Valid RequestTagDto dto) {
         tagService.update(id, dto);
         return ResponseEntity.status(201).build();
     }

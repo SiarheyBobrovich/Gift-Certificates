@@ -1,5 +1,6 @@
 package ru.clevertec.ecl.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +27,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createNewOrder(@RequestBody CreateOrderDto createOrderDto) {
+    public ResponseEntity<Void> createNewOrder(@RequestBody @Valid CreateOrderDto createOrderDto) {
         orderService.create(createOrderDto);
         return ResponseEntity.status(204).build();
     }

@@ -20,7 +20,7 @@ public record RequestGiftCertificateDto(
         @NotBlank
         String description,
 
-        @Min(1)
+        @Positive
         Integer duration,
 
         @Valid

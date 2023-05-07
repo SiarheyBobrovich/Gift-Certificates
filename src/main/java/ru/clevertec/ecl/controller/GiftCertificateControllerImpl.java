@@ -1,5 +1,6 @@
 package ru.clevertec.ecl.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +35,7 @@ public class GiftCertificateControllerImpl implements GiftCertificateController 
     @Override
     @GetMapping(path = "/findBy")
     public ResponseEntity<Page<ResponseGiftCertificateDto>> getByFilter(@PageableDefault(20) Pageable pageable,
-                                                                        Filter filter
+                                                                        @Valid Filter filter
     ) {
         Page<ResponseGiftCertificateDto> giftCertificateDtoList = service.findByFilter(filter, pageable);
 
@@ -50,7 +51,7 @@ public class GiftCertificateControllerImpl implements GiftCertificateController 
 
     @Override
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> postGiftCertificate(@RequestBody RequestGiftCertificateDto dto) {
+    public ResponseEntity<Void> postGiftCertificate(@RequestBody @Valid RequestGiftCertificateDto dto) {
         service.create(dto);
         return ResponseEntity.status(201).build();
     }
@@ -58,7 +59,7 @@ public class GiftCertificateControllerImpl implements GiftCertificateController 
     @Override
     @PutMapping(path = "/{id}", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> putGiftCertificate(@PathVariable Long id,
-                                                   @RequestBody RequestGiftCertificateDto dto) {
+                                                   @RequestBody @Valid RequestGiftCertificateDto dto) {
         service.update(id, dto);
         return ResponseEntity.status(201).build();
     }
@@ -73,7 +74,7 @@ public class GiftCertificateControllerImpl implements GiftCertificateController 
     @Override
     @PatchMapping(path = "/{id}")
     public ResponseEntity<Void> patchGiftCertificate(@PathVariable Long id,
-                                                     @RequestBody Patch patch) {
+                                                     @RequestBody @Valid Patch patch) {
         service.patch(id, patch);
         return ResponseEntity.status(201).build();
     }
