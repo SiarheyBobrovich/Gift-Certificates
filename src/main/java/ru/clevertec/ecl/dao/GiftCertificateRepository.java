@@ -1,14 +1,10 @@
 package ru.clevertec.ecl.dao;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.clevertec.ecl.entity.GiftCertificate;
-
-import java.util.List;
 
 public interface GiftCertificateRepository extends JpaRepository<GiftCertificate, Long> {
 

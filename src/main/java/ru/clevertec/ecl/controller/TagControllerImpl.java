@@ -55,4 +55,11 @@ public class TagControllerImpl implements TagController {
         tagService.delete(id);
         return ResponseEntity.status(204).build();
     }
+
+    @Override
+    @GetMapping("/popular")
+    public ResponseEntity<ResponseTagDto> getMostPopularTag() {
+        ResponseTagDto mostPopularTag = tagService.findMostPopularTag();
+        return ResponseEntity.ok(mostPopularTag);
+    }
 }

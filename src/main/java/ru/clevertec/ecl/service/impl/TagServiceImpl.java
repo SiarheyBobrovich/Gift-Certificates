@@ -7,7 +7,6 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.dao.TagRepository;
 import ru.clevertec.ecl.data.tag.RequestTagDto;
@@ -83,5 +82,12 @@ public class TagServiceImpl implements TagService, TagNamesService {
         }
         List<Tag> tagList = tagRepository.findByNameIn(names);
         return mapper.listTagToListResponseTagDto(tagList);
+    }
+
+    @Override
+    public ResponseTagDto findMostPopularTag() {
+        return tagRepository.findTheMostPopularTag()
+                .map(mapper::tagToResponseTagDto)
+                .orElseThrow(TagNotFoundException::new);
     }
 }
