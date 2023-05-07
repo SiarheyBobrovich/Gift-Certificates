@@ -27,10 +27,7 @@ public class User {
     private String lastName;
 
     @ToString.Exclude
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinTable(schema = "certificate", name = "users_orders",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "orders_id"))
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Order> orders;
 
     @Override
