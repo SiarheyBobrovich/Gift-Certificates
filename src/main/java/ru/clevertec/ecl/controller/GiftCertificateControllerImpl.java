@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.clevertec.ecl.controller.api.GiftCertificateController;
 import ru.clevertec.ecl.data.gift_certificate.RequestGiftCertificateDto;
@@ -14,13 +15,13 @@ import ru.clevertec.ecl.data.gift_certificate.ResponseGiftCertificateDto;
 import ru.clevertec.ecl.pageable.Filter;
 import ru.clevertec.ecl.pageable.Patch;
 import ru.clevertec.ecl.service.GiftCertificateService;
+import ru.clevertec.ecl.validation.ValidPatch;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/certificates")
-@Validated
 public class GiftCertificateControllerImpl implements GiftCertificateController {
 
     private final GiftCertificateService service;

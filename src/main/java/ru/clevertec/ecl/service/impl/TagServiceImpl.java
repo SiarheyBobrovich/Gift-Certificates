@@ -45,8 +45,12 @@ public class TagServiceImpl implements TagService, TagNamesService {
     @Override
     @Transactional
     public void create(RequestTagDto dto) {
-        final Tag tag = mapper.requestTagDtoToTag(dto);
-        tagRepository.save(tag);
+        boolean isNotExist = tagRepository.findByName(dto.name())
+                .isEmpty();
+        if (isNotExist) {
+            final Tag tag = mapper.requestTagDtoToTag(dto);
+            tagRepository.save(tag);
+        }
     }
 
     @Override

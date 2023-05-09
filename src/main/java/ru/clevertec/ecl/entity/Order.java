@@ -14,7 +14,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(schema = "certificate", name = "orders")
+@Table(schema = "certificate", name = "order")
 public class Order {
 
     @Id

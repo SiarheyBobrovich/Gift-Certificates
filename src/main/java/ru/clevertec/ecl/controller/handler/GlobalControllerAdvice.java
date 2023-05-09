@@ -1,14 +1,14 @@
 package ru.clevertec.ecl.controller.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.clevertec.ecl.exception.AbstractServiceException;
 import ru.clevertec.ecl.exception.AbstractValidationException;
-import ru.clevertec.ecl.exception.EntityNotFoundException;
-import ru.clevertec.ecl.exception.FilterException;
 
 import java.util.List;
 
@@ -43,6 +43,17 @@ public class GlobalControllerAdvice {
         log.info(e.getMessage());
         Error error = new Error("Please try again letter", 500);
         return ResponseEntity.internalServerError().body(error);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Error> handleThrowable(MethodArgumentNotValidException e) {
+        String message = e.getFieldErrors().stream()
+                .map(error -> StringUtils.joinWith(" = ", error.getField(), error.getDefaultMessage()))
+                .reduce((s1, s2)-> StringUtils.joinWith("; ", s1, s2))
+                .orElse("Bad Request");
+        log.info(message);
+        Error error = new Error(message, 400);
+        return ResponseEntity.badRequest().body(error);
     }
 
     record Error(String errorMessage, int errorCode) {

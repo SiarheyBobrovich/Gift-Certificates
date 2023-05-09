@@ -18,7 +18,7 @@ public interface GiftCertificateService extends CrudService<RequestGiftCertifica
     Page<ResponseGiftCertificateDto> findByFilter(Filter filter, Pageable pageable);
 
     /**
-     * Patch existed certificate
+     * Change single field of gift certificate (only duration of a certificate or only price).
      *
      * @param id    certificate ID
      * @param patch Field-value dto

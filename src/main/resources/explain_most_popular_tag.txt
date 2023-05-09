@@ -1,17 +1,16 @@
-Limit  (cost=48.08..63.60 rows=1 width=66)
-  ->  Group  (cost=48.08..622.27 rows=37 width=66)
-        Group Key: t.id
-        ->  Nested Loop  (cost=48.08..622.18 rows=37 width=66)
-              Join Filter: (gt.t_id = t.id)
-              ->  Materialize  (cost=47.93..83.92 rows=37 width=8)
-              ->  Index Scan using tag_pkey on tag t  (cost=0.15..61.05 rows=860 width=66)
+Limit  (cost=91.63..91.64 rows=1 width=74)
+  ->  Sort  (cost=91.63..91.73 rows=37 width=74)
+        Sort Key: (count(t.id)) DESC
+        ->  HashAggregate  (cost=91.08..91.45 rows=37 width=74)
+              Group Key: t.id
+              ->  Nested Loop  (cost=48.08..90.89 rows=37 width=66)
                     ->  Hash Join  (cost=47.93..83.74 rows=37 width=8)
                           Hash Cond: (gt.gc_id = o.gc_id)
                           ->  Seq Scan on gc_tag gt  (cost=0.00..28.50 rows=1850 width=16)
                           ->  Hash  (cost=47.88..47.88 rows=4 width=8)
                                 ->  Hash Join  (cost=26.73..47.88 rows=4 width=8)
                                       Hash Cond: (o.user_id = u.user_id)
-                                      ->  Seq Scan on orders o  (cost=0.00..18.80 rows=880 width=16)
+"                                      ->  Seq Scan on ""order"" o  (cost=0.00..18.80 rows=880 width=16)"
                                       ->  Hash  (cost=26.71..26.71 rows=1 width=8)
                                             ->  Subquery Scan on u  (cost=26.70..26.71 rows=1 width=8)
                                                   ->  Limit  (cost=26.70..26.70 rows=1 width=40)
@@ -19,4 +18,6 @@ Limit  (cost=48.08..63.60 rows=1 width=66)
                                                               Sort Key: (sum(o_1.price)) DESC
                                                               ->  HashAggregate  (cost=23.20..25.70 rows=200 width=40)
                                                                     Group Key: o_1.user_id
-                                                                    ->  Seq Scan on orders o_1  (cost=0.00..18.80 rows=880 width=40)
+"                                                                    ->  Seq Scan on ""order"" o_1  (cost=0.00..18.80 rows=880 width=40)"
+                    ->  Index Scan using tag_pkey on tag t  (cost=0.15..0.19 rows=1 width=66)
+                          Index Cond: (id = gt.t_id)

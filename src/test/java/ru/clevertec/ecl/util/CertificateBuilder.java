@@ -11,6 +11,7 @@ import ru.clevertec.ecl.entity.Tag;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +41,7 @@ public class CertificateBuilder {
     private LocalDateTime lastUpdateDate = LocalDateTime.MIN;
 
     @Builder.Default
-    private List<Tag> tags = List.of(new Tag(1L, "#1"), new Tag(2L, "#2"));
+    private List<Tag> tags = new ArrayList<>(List.of(new Tag(1L, "One"), new Tag(2L, "Two")));
 
     public RequestGiftCertificateDto getRequestDto() {
         return new RequestGiftCertificateDto(

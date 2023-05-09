@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - include:
+      file: liquibase/changelog/1_schema.xml
+  - include:
+      file: liquibase/changelog/2_table_gift_certificate.xml
+  - include:
+      file: liquibase/changelog/3_table_tag.xml
+  - include:
+      file: liquibase/changelog/4_table_gc_tag.xml
+  - include:
+      file: liquibase/changelog/5_table_users.xml
+  - include:
+      file: liquibase/changelog/6_table_order.xml

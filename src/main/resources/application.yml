@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: dev
   datasource:
     driver-class-name: org.postgresql.Driver
   jpa:
@@ -7,3 +9,5 @@ spring:
     properties:
       hibernate:
         format_sql: false
+  liquibase:
+    enabled: false

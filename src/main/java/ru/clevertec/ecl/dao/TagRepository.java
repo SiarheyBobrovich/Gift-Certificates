@@ -24,17 +24,18 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
     List<Tag> findByNameIn(Collection<String> names);
 
     @Query(nativeQuery = true, value = """
-            select t.id, t.name
-            from (SELECT o.user_id
-                  from certificate.orders o
-                  group by o.user_id
-                  order by sum(o.price) desc
-                  limit 1) u
-                     join certificate.orders o USING (user_id)
-                     join certificate.gc_tag gt USING (gc_id)
-                     join certificate.tag t ON gt.t_id = t.id
-            group by t.id, t.name
-            limit 1
+            SELECT t.id, t.name
+            FROM (SELECT o.user_id
+                  FROM certificate.order o
+                  GROUP BY o.user_id
+                  ORDER BY sum(o.price) DESC 
+                  LIMIT 1) u
+                     JOIN certificate.order o USING (user_id)
+                     JOIN certificate.gc_tag gt USING (gc_id)
+                     JOIN certificate.tag t ON gt.t_id = t.id
+            GROUP BY t.id, t.name
+            ORDER BY count(t.id) DESC 
+            LIMIT 1
             """)
     Optional<Tag> findTheMostPopularTag();
 }

@@ -1,9 +1,9 @@
 package ru.clevertec.ecl.data.gift_certificate;
 
-import ru.clevertec.ecl.data.tag.RequestTagDto;
-
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import ru.clevertec.ecl.data.tag.RequestTagDto;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -15,12 +15,14 @@ public record RequestGiftCertificateDto(
         String name,
 
         @DecimalMin("0")
+        @NotNull
         BigDecimal price,
 
         @NotBlank
         String description,
 
         @Positive
+        @NotNull
         Integer duration,
 
         @Valid

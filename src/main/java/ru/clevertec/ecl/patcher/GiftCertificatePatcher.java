@@ -27,7 +27,7 @@ public class GiftCertificatePatcher implements Patcher<GiftCertificate> {
         field.setAccessible(true);
         Class<?> fieldType = field.getType();
 
-        Object o = null;
+        Object o;
         try {
             o = mapper.readValue(patch.value(), fieldType);
         } catch (JsonProcessingException e) {

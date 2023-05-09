@@ -1,23 +1,27 @@
 package ru.clevertec.ecl.service.impl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import ru.clevertec.ecl.dao.TagRepository;
 import ru.clevertec.ecl.data.tag.RequestTagDto;
 import ru.clevertec.ecl.data.tag.ResponseTagDto;
 import ru.clevertec.ecl.entity.Tag;
 import ru.clevertec.ecl.exception.EntityNotFoundException;
+import ru.clevertec.ecl.exception.TagNotFoundException;
 
-import javax.validation.Validator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -32,13 +36,13 @@ class TagServiceImplTest {
     @Mock
     private TagRepository tagRepository;
 
-    @Mock
-    private Validator validator;
-
     @Test
     void checkFindById() {
         Long id = 1L;
-        Optional<Tag> optionalTag = Optional.of(Tag.builder().id(id).name("name").build());
+        Optional<Tag> optionalTag = Optional.of(Tag.builder()
+                .id(id)
+                .name("name")
+                .build());
         doReturn(optionalTag).when(tagRepository).findById(1L);
 
         ResponseTagDto tagDto = tagService.findById(id);
@@ -50,7 +54,7 @@ class TagServiceImplTest {
     }
 
     @Test
-    void checkFindByIdEntityNotFoundException() {
+    void checkFindByThrows() {
         doReturn(Optional.empty()).when(tagRepository).findById(1L);
 
         assertThatThrownBy(() -> tagService.findById(1L)).isInstanceOf(EntityNotFoundException.class);
@@ -58,21 +62,23 @@ class TagServiceImplTest {
 
     @Test
     void checkFindAll() {
-        List<Tag> tags = List.of(
+        Pageable pageable = Pageable.unpaged();
+        PageImpl<Tag> tagPage = new PageImpl<>(List.of(
                 Tag.builder().id(1L).name("name1").build(),
-                Tag.builder().id(2L).name("name2").build());
+                Tag.builder().id(2L).name("name2").build()), pageable, 2);
 
-        doReturn(tags).when(tagRepository).findAll();
+        doReturn(tagPage).when(tagRepository).findAll(pageable);
 
-        List<ResponseTagDto> all = tagService.findAll();
+        Page<ResponseTagDto> responseTagDtoPage = tagService.findAll(pageable);
+        List<ResponseTagDto> actual = responseTagDtoPage.getContent();
 
-        IntStream.range(0, all.size())
+        IntStream.range(0, actual.size())
                 .forEach(x -> {
-                    Long actualId = all.get(x).id();
-                    Long expectedId = tags.get(x).getId();
+                    Long actualId = actual.get(x).id();
+                    Long expectedId = tagPage.getContent().get(x).getId();
 
-                    String actualName = all.get(x).name();
-                    String expectedName = all.get(x).name();
+                    String actualName = actual.get(x).name();
+                    String expectedName = actual.get(x).name();
 
                     assertThat(actualId).isEqualTo(expectedId);
                     assertThat(actualName).isEqualTo(expectedName);
@@ -81,53 +87,125 @@ class TagServiceImplTest {
 
     @Test
     void checkFindAllEmpty() {
-        doReturn(List.of()).when(tagRepository).findAll();
+        Pageable pageable = Pageable.unpaged();
+        doReturn(Page.empty()).when(tagRepository).findAll(pageable);
 
-        List<ResponseTagDto> all = tagService.findAll();
+        Page<ResponseTagDto> all = tagService.findAll(pageable);
 
         assertThat(all).isEmpty();
+    }
+
+    @Test
+    void checkFindByNameInEmpty() {
+        List<ResponseTagDto> byNameIn = tagService.findByNameIn(List.of());
+        assertThat(byNameIn).isEmpty();
+    }
+
+    @Test
+    void checkFindByNameInNull() {
+        List<ResponseTagDto> byNameIn = tagService.findByNameIn(null);
+        assertThat(byNameIn).isEmpty();
+    }
+
+
+    @Test
+    void checkFindByNameIn() {
+        List<Tag> tags = Stream.of(
+                Tag.builder().id(1L).name("tag1").build(),
+                Tag.builder().id(2L).name("tag2").build(),
+                Tag.builder().id(3L).name("tag3").build()
+        ).collect(Collectors.toList());
+        List<String> names = tags.stream().map(Tag::getName)
+                .collect(Collectors.toList());
+
+        doReturn(tags)
+                .when(tagRepository).findByNameIn(names);
+
+        List<ResponseTagDto> actual = tagService.findByNameIn(names);
+
+        assertThat(actual.stream()
+                .map(ResponseTagDto::name)
+                .allMatch(names::contains))
+                .isTrue();
     }
 
     @Nested
     class Create {
 
-        @BeforeEach
-        void setUp() {
-            doReturn(Set.of()).when(validator).validate(any());
-        }
-
         @Test
         void checkCreate() {
             RequestTagDto tagDto = new RequestTagDto("name");
-            Tag tagSave = Tag.builder().name("name").build();
-            Tag tag = Tag.builder().id(1L).name("name").build();
 
-            doReturn(tag).when(tagRepository).save(tagSave);
+            doReturn(Optional.empty())
+                    .when(tagRepository).findByName("name");
 
             tagService.create(tagDto);
 
-            verify(tagRepository, times(1)).save(tagSave);
+            verify(tagRepository, times(1))
+                    .save(argThat(arg -> Objects.isNull(arg.getId()) &&
+                            Objects.equals("name", arg.getName())));
+        }
+
+        @Test
+        void checkCreateDoesNotSave() {
+            RequestTagDto tagDto = new RequestTagDto("name");
+            Tag tag = Tag.builder().name("name").build();
+
+            doReturn(Optional.of(tag))
+                    .when(tagRepository).findByName("name");
+
+            tagService.create(tagDto);
+
+            verify(tagRepository, times(0))
+                    .save(any());
         }
     }
 
     @Nested
     class Update {
 
-        @BeforeEach
-        void setUp() {
-            doReturn(Set.of()).when(validator).validate(any());
-        }
-
         @Test
         void checkUpdate() {
             RequestTagDto tagDto = new RequestTagDto("name");
             Tag tagUpdate = Tag.builder().id(1L).name("name").build();
 
-            doReturn(tagUpdate).when(tagRepository).update(tagUpdate);
+            doReturn(tagUpdate).when(tagRepository).save(tagUpdate);
 
             tagService.update(1L, tagDto);
 
-            verify(tagRepository, times(1)).update(tagUpdate);
+            verify(tagRepository, times(1)).save(tagUpdate);
         }
+    }
+
+    @Test
+    void checkDelete() {
+        tagService.delete(1L);
+
+        verify(tagRepository, times(1))
+                .deleteById(1L);
+    }
+
+    @Test
+    void checkFindMostPopularTag() {
+        Tag tag = Tag.builder().id(1L).name("popular").build();
+
+        doReturn(Optional.of(tag))
+                .when(tagRepository).findTheMostPopularTag();
+
+        ResponseTagDto mostPopularTag = tagService.findMostPopularTag();
+
+        assertThat(
+                Objects.equals(mostPopularTag.id(), tag.getId()) &&
+                        Objects.equals(mostPopularTag.name(), tag.getName()))
+                .isTrue();
+    }
+
+    @Test
+    void checkFindMostPopularTagThrows() {
+        doReturn(Optional.empty())
+                .when(tagRepository).findTheMostPopularTag();
+
+        assertThatThrownBy(() -> tagService.findMostPopularTag())
+                .isInstanceOf(TagNotFoundException.class);
     }
 }
