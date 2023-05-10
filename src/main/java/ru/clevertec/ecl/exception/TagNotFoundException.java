@@ -12,6 +12,6 @@ public class TagNotFoundException extends EntityNotFoundException {
 
     @Override
     public int getCode() {
-        return 404001;
+        return 40401;
     }
 }

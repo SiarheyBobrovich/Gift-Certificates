@@ -37,7 +37,7 @@ public class TagControllerImpl implements TagController {
 
     @Override
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> postTag(@RequestBody RequestTagDto dto) {
+    public ResponseEntity<Void> postTag(@RequestBody @Valid RequestTagDto dto) {
         tagService.create(dto);
         return ResponseEntity.status(201).build();
     }
@@ -59,7 +59,7 @@ public class TagControllerImpl implements TagController {
 
     @Override
     @GetMapping("/popular")
-    public ResponseEntity<ResponseTagDto> getMostPopularTag() {
+    public ResponseEntity<ResponseTagDto> getMostWidelyTag() {
         ResponseTagDto mostPopularTag = tagService.findMostWidelyTag();
         return ResponseEntity.ok(mostPopularTag);
     }

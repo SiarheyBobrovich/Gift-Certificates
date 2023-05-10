@@ -19,5 +19,5 @@ public interface TagController {
 
     ResponseEntity<Void> deleteTag(Long id);
 
-    ResponseEntity<ResponseTagDto> getMostPopularTag();
+    ResponseEntity<ResponseTagDto> getMostWidelyTag();
 }
