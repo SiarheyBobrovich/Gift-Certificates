@@ -77,8 +77,8 @@ public class TagServiceImpl implements TagService, TagNamesService {
     }
 
     @Override
-    public ResponseTagDto findMostPopularTag() {
-        return tagRepository.findTheMostPopularTag()
+    public ResponseTagDto findMostWidelyTag() {
+        return tagRepository.findTheMostWidelyTag()
                 .map(mapper::tagToResponseTagDto)
                 .orElseThrow(TagNotFoundException::new);
     }

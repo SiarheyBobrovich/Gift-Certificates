@@ -8,7 +8,20 @@ import ru.clevertec.ecl.entity.User;
 import java.util.Optional;
 
 public interface UserRepository extends Repository<User, Long> {
+
+    /**
+     * Find user by ID
+     *
+     * @param id user ID
+     * @return optional of found user
+     */
     Optional<User> findById(Long id);
 
+    /**
+     * Find page of users
+     *
+     * @param pageable current page
+     * @return found users page
+     */
     Page<User> findAll(Pageable pageable);
 }

@@ -60,7 +60,7 @@ public class TagControllerImpl implements TagController {
     @Override
     @GetMapping("/popular")
     public ResponseEntity<ResponseTagDto> getMostPopularTag() {
-        ResponseTagDto mostPopularTag = tagService.findMostPopularTag();
+        ResponseTagDto mostPopularTag = tagService.findMostWidelyTag();
         return ResponseEntity.ok(mostPopularTag);
     }
 }

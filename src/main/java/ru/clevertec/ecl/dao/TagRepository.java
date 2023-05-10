@@ -1,6 +1,5 @@
 package ru.clevertec.ecl.dao;
 
-import org.hibernate.annotations.NamedNativeQuery;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -21,8 +20,19 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
      */
     Optional<Tag> findByName(String name);
 
+    /**
+     * Find tags by names
+     *
+     * @param names list of tag names
+     * @return list of found tags
+     */
     List<Tag> findByNameIn(Collection<String> names);
 
+    /**
+     * Get the most widely used tag of a user with the highest cost of all orders
+     *
+     * @return the most widely used tag
+     */
     @Query(nativeQuery = true, value = """
             SELECT t.id, t.name
             FROM (SELECT o.user_id
@@ -37,5 +47,5 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
             ORDER BY count(t.id) DESC 
             LIMIT 1
             """)
-    Optional<Tag> findTheMostPopularTag();
+    Optional<Tag> findTheMostWidelyTag();
 }

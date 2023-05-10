@@ -3,10 +3,12 @@ package ru.clevertec.ecl.service;
 import ru.clevertec.ecl.data.tag.RequestTagDto;
 import ru.clevertec.ecl.data.tag.ResponseTagDto;
 
-import java.util.Collection;
-import java.util.List;
-
 public interface TagService extends CrudService<RequestTagDto, ResponseTagDto, Long> {
 
-    ResponseTagDto findMostPopularTag();
+    /**
+     * Get the most widely used tag of a user with the highest cost of all orders
+     *
+     * @return the most widely used tag as dto
+     */
+    ResponseTagDto findMostWidelyTag();
 }
