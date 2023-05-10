@@ -22,7 +22,7 @@ class TagRepositoryTest extends StaticPostgresTestContainer {
 
     @Test
     void findTheMostPopularTag() {
-        Tag theMostPopularTag = repository.findTheMostPopularTag()
+        Tag theMostPopularTag = repository.findTheMostWidelyTag()
                 .orElseThrow();
 
         assertThat(theMostPopularTag.getId()).isEqualTo(3);

@@ -190,9 +190,9 @@ class TagServiceImplTest {
         Tag tag = Tag.builder().id(1L).name("popular").build();
 
         doReturn(Optional.of(tag))
-                .when(tagRepository).findTheMostPopularTag();
+                .when(tagRepository).findTheMostWidelyTag();
 
-        ResponseTagDto mostPopularTag = tagService.findMostPopularTag();
+        ResponseTagDto mostPopularTag = tagService.findMostWidelyTag();
 
         assertThat(
                 Objects.equals(mostPopularTag.id(), tag.getId()) &&
@@ -203,9 +203,9 @@ class TagServiceImplTest {
     @Test
     void checkFindMostPopularTagThrows() {
         doReturn(Optional.empty())
-                .when(tagRepository).findTheMostPopularTag();
+                .when(tagRepository).findTheMostWidelyTag();
 
-        assertThatThrownBy(() -> tagService.findMostPopularTag())
+        assertThatThrownBy(() -> tagService.findMostWidelyTag())
                 .isInstanceOf(TagNotFoundException.class);
     }
 }
