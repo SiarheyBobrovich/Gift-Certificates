@@ -17,11 +17,15 @@ public class TestTagBuilder {
     private String name = "One";
 
     public Optional<Tag> getOptional() {
-        return Optional.of(getTagl());
+        return Optional.of(getTag());
 
     }
 
-    public Tag getTagl() {
+    public Tag getTagWithoutId() {
+        return new Tag(null, name);
+    }
+
+    public Tag getTag() {
         return Tag.builder()
                 .id(id)
                 .name(name)

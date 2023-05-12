@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,13 +28,16 @@ import ru.clevertec.ecl.service.GiftCertificateService;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static ru.clevertec.ecl.util.CertificateBuilder.*;
 
-@WebMvcTest(controllers = GiftCertificateControllerImpl.class)
 @ActiveProfiles("test")
+@WebMvcTest(controllers = GiftCertificateControllerImpl.class)
 class GiftCertificateControllerImplTest {
 
     @Autowired
@@ -113,7 +117,7 @@ class GiftCertificateControllerImplTest {
             testClient.get()
                     .uri(uriBuilder ->
                             uriBuilder.path(URI)
-                                    .path("/findBy")
+                                    .pathSegment("filter")
                                     .queryParams(part)
                                     .build())
                     .exchange()
@@ -131,7 +135,7 @@ class GiftCertificateControllerImplTest {
         }
 
         @ParameterizedTest
-        @MethodSource("getFilter")
+        @MethodSource("getFilterNegate")
         void checkGetByFilterNegate(Filter filter) {
             ArrayList<String> tag = new ArrayList<>();
             tag.add(filter.getTag());
@@ -144,7 +148,7 @@ class GiftCertificateControllerImplTest {
             testClient.get()
                     .uri(uriBuilder ->
                             uriBuilder.path(URI)
-                                    .path("/findBy")
+                                    .path("/filter")
                                     .queryParams(param)
                                     .build())
                     .exchange()
@@ -152,7 +156,7 @@ class GiftCertificateControllerImplTest {
                     .isBadRequest();
         }
 
-        private static Stream<Filter> getFilter() {
+        private static Stream<Filter> getFilterNegate() {
             return Stream.of(
                     Filter.builder().tag("").build(),
                     Filter.builder().part("").build()
@@ -160,11 +164,28 @@ class GiftCertificateControllerImplTest {
         }
     }
 
+    @Test
+    void checkPostGiftCertificate() {
+        RequestGiftCertificateDto dto = builder().build().getRequestDto();
+        ResponseGiftCertificateDto certificateDto = builder().build().getResponseDto();
+
+        doReturn(certificateDto)
+                .when(service).create(dto);
+
+        testClient.post()
+                .uri(URI)
+                .body(Mono.just(dto), ResponseGiftCertificateDto.class)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectHeader()
+                .contentType(MediaType.APPLICATION_JSON)
+                .expectBody(ResponseGiftCertificateDto.class).isEqualTo(certificateDto);
+    }
+
     @ParameterizedTest
     @MethodSource("certificateDtoStream")
-    void postGiftCertificateNegate(RequestGiftCertificateDto dto) {
-        doNothing().when(service).create(dto);
-
+    void checkPostGiftCertificateNegate(RequestGiftCertificateDto dto) {
         testClient.post()
                 .uri(URI)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -176,7 +197,7 @@ class GiftCertificateControllerImplTest {
 
     @ParameterizedTest
     @MethodSource("certificateDtoStream")
-    void putGiftCertificateNegate(RequestGiftCertificateDto dto) {
+    void checkPutGiftCertificateNegate(RequestGiftCertificateDto dto) {
         testClient.put()
                 .uri(URI + "/" + 1L)
                 .body(Mono.just(dto), RequestGiftCertificateDto.class)
@@ -186,36 +207,26 @@ class GiftCertificateControllerImplTest {
     }
 
     @Test
-    void postGiftCertificate() {
+    void checkPutGiftCertificate() {
         RequestGiftCertificateDto dto = builder().build().getRequestDto();
+        ResponseGiftCertificateDto certificate = builder().build().getResponseDto();
         Long id = 1L;
 
-        doNothing().when(service).update(id, dto);
-        testClient.post()
-                .uri(URI)
-                .body(Mono.just(dto), ResponseGiftCertificateDto.class)
-                .exchange()
-                .expectStatus()
-                .isCreated();
-    }
-
-    @Test
-    void putGiftCertificate() {
-        RequestGiftCertificateDto dto = builder().build().getRequestDto();
-        Long id = 1L;
-
-        doNothing().when(service).update(id, dto);
+        doReturn(certificate).when(service).update(id, dto);
 
         testClient.put()
                 .uri(URI + "/" + id)
                 .body(Mono.just(dto), ResponseGiftCertificateDto.class)
                 .exchange()
                 .expectStatus()
-                .isCreated();
+                .isOk()
+                .expectHeader()
+                .contentType(MediaType.APPLICATION_JSON)
+                .expectBody(ResponseGiftCertificateDto.class).isEqualTo(certificate);
     }
 
     @Test
-    void putGiftCertificateThrow() {
+    void checkPutGiftCertificateThrow() {
         RequestGiftCertificateDto dto = builder().build().getRequestDto();
         Long id = 1L;
 
@@ -235,37 +246,33 @@ class GiftCertificateControllerImplTest {
                 .uri(URI + "/1")
                 .exchange()
                 .expectStatus()
-                .isNoContent();
-    }
-
-    @Test
-    void checkDeleteGiftCertificateThrow() {
-        Long id = 1L;
-
-        doThrow(GiftCertificateNotFoundException.class)
-                .when(service).delete(id);
-
-        testClient.delete()
-                .uri(URI + "/" + id)
-                .exchange()
-                .expectStatus()
-                .isBadRequest();
+                .isOk();
     }
 
     @ParameterizedTest
     @MethodSource("getPatch")
     void checkPatchGiftCertificate(Patch patch) {
+        ResponseGiftCertificateDto certificateDto;
         Long id = 1L;
 
-        doThrow(GiftCertificateNotFoundException.class)
-                .when(service).delete(id);
+        if (Objects.equals(patch.field(), "description")) {
+            certificateDto = builder().description(patch.value()).build().getResponseDto();
+        } else {
+            certificateDto = builder().price(new BigDecimal(patch.value())).build().getResponseDto();
+        }
+
+        doReturn(certificateDto)
+                .when(service).patch(id, patch);
 
         testClient.patch()
                 .uri(URI + "/" + id)
                 .body(Mono.just(patch), Patch.class)
                 .exchange()
                 .expectStatus()
-                .isCreated();
+                .isOk()
+                .expectHeader()
+                .contentType(MediaType.APPLICATION_JSON)
+                .expectBody(ResponseGiftCertificateDto.class).isEqualTo(certificateDto);
     }
 
     @ParameterizedTest

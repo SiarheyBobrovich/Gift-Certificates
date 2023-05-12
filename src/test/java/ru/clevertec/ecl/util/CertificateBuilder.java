@@ -88,4 +88,25 @@ public class CertificateBuilder {
                         .toList()
         );
     }
+
+    public static List<ResponseGiftCertificateDto> getResponseList() {
+        return new ArrayList<>(List.of(
+                builder()
+                        .createDate(LocalDateTime.parse("2000-01-01T00:00:00"))
+                        .lastUpdateDate(LocalDateTime.parse("2000-01-01T00:00:00"))
+                        .build().getResponseDto(),
+                builder()
+                        .id(2L)
+                        .description("description2")
+                        .name("Certificate2")
+                        .price(BigDecimal.valueOf(2))
+                        .duration(2)
+                        .createDate(LocalDateTime.parse("1970-01-01T00:00:00"))
+                        .lastUpdateDate(LocalDateTime.parse("1970-01-01T00:00:00"))
+                        .tags(new ArrayList<>(List.of(
+                                new Tag(2L, "Two"),
+                                new Tag(3L, "Three"))))
+                        .build().getResponseDto()
+        ));
+    }
 }

@@ -2,65 +2,85 @@ package ru.clevertec.ecl.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import ru.clevertec.ecl.controller.api.TagController;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import ru.clevertec.ecl.controller.api.TagOpenApi;
 import ru.clevertec.ecl.data.tag.RequestTagDto;
 import ru.clevertec.ecl.data.tag.ResponseTagDto;
 import ru.clevertec.ecl.service.TagService;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
+@Log4j2
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/tags")
-public class TagControllerImpl implements TagController {
+public class TagControllerImpl implements TagOpenApi {
 
     private final TagService tagService;
 
     @Override
-    @GetMapping(path = "/{id}", produces = APPLICATION_JSON_VALUE)
+    @GetMapping("/{id}")
     public ResponseEntity<ResponseTagDto> getByIdTag(@PathVariable Long id) {
         ResponseTagDto tagDto = tagService.findById(id);
-        return ResponseEntity.ok().body(tagDto);
+        log.info("GET/{}\nResponse::{}", id, tagDto);
+
+        return ResponseEntity.ok(tagDto);
     }
 
     @Override
     @GetMapping
     public ResponseEntity<Page<ResponseTagDto>> getAllTags(@PageableDefault(20) Pageable pageable) {
         Page<ResponseTagDto> tagDto = tagService.findAll(pageable);
-        return ResponseEntity.ok().body(tagDto);
+        log.info("GET::{}\nResponse::{}", pageable, tagDto);
+
+        return ResponseEntity.ok(tagDto);
     }
 
     @Override
-    @PostMapping(consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> postTag(@RequestBody @Valid RequestTagDto dto) {
-        tagService.create(dto);
-        return ResponseEntity.status(201).build();
+    @PostMapping
+    public ResponseEntity<ResponseTagDto> postTag(@RequestBody @Valid RequestTagDto dto) {
+        ResponseTagDto responseTagDto = tagService.create(dto);
+        log.info("POST::{}\nResponse::{}", dto, responseTagDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseTagDto);
     }
 
     @Override
-    @PutMapping(path = "/{id}", consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> putTag(@PathVariable Long id,
-                                       @RequestBody @Valid RequestTagDto dto) {
-        tagService.update(id, dto);
-        return ResponseEntity.status(201).build();
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseTagDto> putTag(@PathVariable Long id,
+                                                 @RequestBody @Valid RequestTagDto dto) {
+        ResponseTagDto tagDto = tagService.update(id, dto);
+        log.info("PUT/{}::{}\nResponse::{}", id, dto, tagDto);
+
+        return ResponseEntity.ok(tagDto);
     }
 
     @Override
-    @DeleteMapping(path = "/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTag(@PathVariable Long id) {
         tagService.delete(id);
-        return ResponseEntity.status(204).build();
+        log.info("DELETE/{}", id);
+
+        return ResponseEntity.ok().build();
     }
 
     @Override
-    @GetMapping("/popular")
+    @GetMapping("/widely")
     public ResponseEntity<ResponseTagDto> getMostWidelyTag() {
         ResponseTagDto mostPopularTag = tagService.findMostWidelyTag();
+        log.info("GET/widely\nResponse::{}", mostPopularTag);
+
         return ResponseEntity.ok(mostPopularTag);
     }
 }

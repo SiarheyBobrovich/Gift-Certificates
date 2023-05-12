@@ -22,6 +22,7 @@ public interface GiftCertificateService extends CrudService<RequestGiftCertifica
      *
      * @param id    certificate ID
      * @param patch Field-value dto
+     * @return patched certificate as dto
      */
-    void patch(Long id, Patch patch);
+    ResponseGiftCertificateDto patch(Long id, Patch patch);
 }

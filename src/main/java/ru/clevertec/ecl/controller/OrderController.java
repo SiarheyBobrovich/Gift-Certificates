@@ -2,33 +2,45 @@ package ru.clevertec.ecl.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.data.order.CreateOrderDto;
 import ru.clevertec.ecl.data.order.ResponseOrderDto;
 import ru.clevertec.ecl.service.OrderService;
 
+
+@Log4j2
 @RestController
-@RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/orders")
 public class OrderController {
 
     private final OrderService orderService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Page<ResponseOrderDto>> findAllOrdersByUserId(@PathVariable Long userId,
-                                                                        @PageableDefault(20) Pageable pageable) {
-
+    public ResponseEntity<Page<ResponseOrderDto>> findAllOrdersByUserId(@PageableDefault(20) Pageable pageable,
+                                                                        @PathVariable Long userId) {
         Page<ResponseOrderDto> responseOrderDtoPage = orderService.findAllByUserId(userId, pageable);
-        return ResponseEntity.ok().body(responseOrderDtoPage);
+        log.info("GET/{}\nResponse::{}", userId, responseOrderDtoPage);
+
+        return ResponseEntity.ok(responseOrderDtoPage);
     }
 
     @PostMapping
-    public ResponseEntity<Void> createNewOrder(@RequestBody @Valid CreateOrderDto createOrderDto) {
-        orderService.create(createOrderDto);
-        return ResponseEntity.status(204).build();
+    public ResponseEntity<ResponseOrderDto> createNewOrder(@RequestBody @Valid CreateOrderDto createOrderDto) {
+        ResponseOrderDto orderDto = orderService.create(createOrderDto);
+        log.info("POST::{}\nResponse::{}", createOrderDto, orderDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderDto);
     }
 }

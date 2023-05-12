@@ -1,7 +1,6 @@
 package ru.clevertec.ecl.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,19 +34,21 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertificateRepository repository;
     private final TagNamesService tagService;
-    private final GiftCertificateMapper mapper = Mappers.getMapper(GiftCertificateMapper.class);
+    private final GiftCertificateMapper mapper;
     private final Patcher<GiftCertificate> patcher;
 
     @Override
     public ResponseGiftCertificateDto findById(Long id) {
         GiftCertificate giftCertificate = repository.findById(id)
                 .orElseThrow(() -> new GiftCertificateNotFoundException(id));
+
         return mapper.giftCertificateToResponseGiftCertificateDto(giftCertificate);
     }
 
     @Override
     public Page<ResponseGiftCertificateDto> findAll(Pageable pageable) {
         Page<GiftCertificate> giftCertificates = repository.findAll(pageable);
+
         return PageDto.of(giftCertificates)
                 .map(mapper::giftCertificateToResponseGiftCertificateDto);
     }
@@ -65,34 +66,34 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public void patch(Long id, Patch patch) {
+    public ResponseGiftCertificateDto patch(Long id, Patch patch) {
         GiftCertificate giftCertificate = repository.findById(id)
                 .orElseThrow(() -> new GiftCertificateNotFoundException(id));
 
         patcher.applyPatch(giftCertificate, patch);
-        repository.save(giftCertificate);
+        GiftCertificate savedCertificate = repository.save(giftCertificate);
+
+        return mapper.giftCertificateToResponseGiftCertificateDto(savedCertificate);
     }
 
     @Override
     @Transactional
-    public void create(RequestGiftCertificateDto dto) {
+    public ResponseGiftCertificateDto create(RequestGiftCertificateDto dto) {
         GiftCertificate giftCertificate = mapper.requestGiftCertificateDtoToGiftCertificate(dto);
         List<Tag> existedTags = removeExistingTagsAndRevertThem(giftCertificate);
         giftCertificate = repository.save(giftCertificate);
         existedTags.forEach(giftCertificate::addTag);
-        repository.save(giftCertificate);
+        GiftCertificate savedCertificate = repository.save(giftCertificate);
+
+        return mapper.giftCertificateToResponseGiftCertificateDto(savedCertificate);
     }
 
     @Override
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void update(Long id, RequestGiftCertificateDto dto) {
+    @Transactional
+    public ResponseGiftCertificateDto update(Long id, RequestGiftCertificateDto dto) {
         GiftCertificate currentCertificate = repository.findById(id)
+                .map(certificate -> mapper.merge(certificate, dto))
                 .orElseThrow(() -> new GiftCertificateNotFoundException(id));
-
-        currentCertificate.setName(dto.name());
-        currentCertificate.setDescription(dto.description());
-        currentCertificate.setPrice(dto.price());
-        currentCertificate.setDuration(dto.duration());
 
         updateTags(
                 currentCertificate,
@@ -100,7 +101,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                         .map(RequestTagDto::name)
                         .collect(Collectors.toList()));
 
-        repository.saveAndFlush(currentCertificate);
+        GiftCertificate savedCertificate = repository.saveAndFlush(currentCertificate);
+
+        return mapper.giftCertificateToResponseGiftCertificateDto(savedCertificate);
     }
 
     @Override

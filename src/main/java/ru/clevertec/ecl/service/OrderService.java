@@ -12,7 +12,7 @@ public interface OrderService {
      *
      * @param createOrderDto dto must contain user ID and gift-certificate ID
      */
-    void create(CreateOrderDto createOrderDto);
+    ResponseOrderDto create(CreateOrderDto createOrderDto);
 
     /**
      * Find page od orders by user ID

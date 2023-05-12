@@ -20,8 +20,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
-@WebMvcTest(controllers = UserController.class)
 @ActiveProfiles("test")
+@WebMvcTest(controllers = UserController.class)
 class UserControllerTest {
 
     @Autowired

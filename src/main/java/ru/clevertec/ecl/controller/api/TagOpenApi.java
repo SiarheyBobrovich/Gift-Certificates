@@ -6,16 +6,16 @@ import org.springframework.http.ResponseEntity;
 import ru.clevertec.ecl.data.tag.RequestTagDto;
 import ru.clevertec.ecl.data.tag.ResponseTagDto;
 
-public interface TagController {
+public interface TagOpenApi {
 
     ResponseEntity<ResponseTagDto> getByIdTag(Long id);
 
     ResponseEntity<Page<ResponseTagDto>> getAllTags(Pageable pageable);
 
-    ResponseEntity<Void> postTag(RequestTagDto dto);
+    ResponseEntity<ResponseTagDto> postTag(RequestTagDto dto);
 
-    ResponseEntity<Void> putTag(Long id,
-                                RequestTagDto dto);
+    ResponseEntity<ResponseTagDto> putTag(Long id,
+                                          RequestTagDto dto);
 
     ResponseEntity<Void> deleteTag(Long id);
 

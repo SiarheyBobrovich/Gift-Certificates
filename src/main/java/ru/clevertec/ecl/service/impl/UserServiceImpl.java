@@ -1,7 +1,6 @@
 package ru.clevertec.ecl.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,19 +17,19 @@ import ru.clevertec.ecl.service.UserService;
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository repository;
-    private final UserMapper mapper = Mappers.getMapper(UserMapper.class);
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
     public ResponseUserDto findById(Long id) {
-        return repository.findById(id)
-                .map(mapper::userToResponseUserDto)
+        return userRepository.findById(id)
+                .map(userMapper::userToResponseUserDto)
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @Override
     public Page<ResponseUserDto> findAll(Pageable pageable) {
-        return PageDto.of(repository.findAll(pageable))
-                .map(mapper::userToResponseUserDto);
+        return PageDto.of(userRepository.findAll(pageable))
+                .map(userMapper::userToResponseUserDto);
     }
 }

@@ -21,13 +21,15 @@ public class GiftCertificatePatcher implements Patcher<GiftCertificate> {
     @Override
     public void applyPatch(GiftCertificate giftCertificate, Patch patch) {
         Field field = ReflectionUtils.findField(giftCertificate.getClass(), patch.field());
+
         if (Objects.isNull(field)) {
             throw new GiftCertificatePatchException(String.format("Field %s does not exist", patch.field()));
         }
+
         field.setAccessible(true);
         Class<?> fieldType = field.getType();
-
         Object o;
+
         try {
             o = mapper.readValue(patch.value(), fieldType);
         } catch (JsonProcessingException e) {

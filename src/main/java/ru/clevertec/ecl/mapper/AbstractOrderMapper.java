@@ -9,20 +9,21 @@ import ru.clevertec.ecl.data.order.ResponseOrderDto;
 import ru.clevertec.ecl.entity.Order;
 import ru.clevertec.ecl.entity.User;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(uses = {UserMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public abstract class AbstractOrderMapper {
 
     public UserMapper userMapper;
     public GiftCertificateMapper giftCertificateMapper = Mappers.getMapper(GiftCertificateMapper.class);
 
     @Mapping(target = "giftCertificateId", source = "giftCertificate.id")
-    public abstract ResponseOrderDto OrderToResponseOrderDto(Order order);
+    public abstract ResponseOrderDto orderToResponseOrderDto(Order order);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "purchase", ignore = true)
     @Mapping(target = "price", source = "giftCertificate.price")
     @Mapping(target = "giftCertificate", source = "giftCertificate")
-    @Mapping(target = "purchase", ignore = true)
-    public abstract Order createOrderDtoToOrder(User user, ResponseGiftCertificateDto giftCertificate);
+    public abstract Order createOrderDtoToOrder(User user,
+                                                ResponseGiftCertificateDto giftCertificate);
 
     @Mapping(target = "user", ignore = true)
     public abstract Order responseOrderDtoToOrder(ResponseOrderDto orderDto);

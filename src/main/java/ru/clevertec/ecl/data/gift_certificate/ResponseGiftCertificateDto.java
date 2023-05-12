@@ -6,15 +6,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record ResponseGiftCertificateDto(
-        Long id,
-        String name,
-        BigDecimal price,
-        String description,
-        Integer duration,
-        LocalDateTime createDate,
-        LocalDateTime lastUpdateDate,
-        List<ResponseTagDto> tags
-
+public record ResponseGiftCertificateDto(Long id,
+                                         String name,
+                                         BigDecimal price,
+                                         String description,
+                                         Integer duration,
+                                         LocalDateTime createDate,
+                                         LocalDateTime lastUpdateDate,
+                                         List<ResponseTagDto> tags
 ) {
 }

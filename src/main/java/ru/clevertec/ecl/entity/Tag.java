@@ -1,20 +1,29 @@
 package ru.clevertec.ecl.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.Hibernate;
-import ru.clevertec.ecl.data.tag.RequestTagDto;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity
 @Builder
 @ToString
-@Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(schema = "certificate", name = "tag")
 public class Tag implements Serializable {
 

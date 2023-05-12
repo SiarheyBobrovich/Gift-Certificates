@@ -2,6 +2,8 @@ package ru.clevertec.ecl.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.TargetType;
 import ru.clevertec.ecl.data.gift_certificate.RequestGiftCertificateDto;
 import ru.clevertec.ecl.data.gift_certificate.ResponseGiftCertificateDto;
 import ru.clevertec.ecl.entity.GiftCertificate;
@@ -21,4 +23,8 @@ public interface GiftCertificateMapper {
     List<ResponseGiftCertificateDto> listGiftCertificateToListResponseGiftCertificateDto(List<GiftCertificate> giftCertificates);
 
     GiftCertificate ResponseGiftCertificateDtoToGiftCertificate(ResponseGiftCertificateDto responseGiftCertificateDto);
+
+    @Mapping(target = "tags", ignore = true)
+    GiftCertificate merge(@MappingTarget GiftCertificate certificate,
+               RequestGiftCertificateDto dto);
 }

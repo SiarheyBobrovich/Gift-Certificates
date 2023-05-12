@@ -17,7 +17,9 @@ public class PageDto<T> extends PageImpl<T> {
         super(page.getContent(), page.getPageable(), page.getTotalElements());
     }
 
-    public PageDto(List<T> content, Pageable pageable, long total) {
+    public PageDto(List<T> content,
+                   Pageable pageable,
+                   long total) {
         super(content, pageable, total);
     }
 
@@ -57,14 +59,14 @@ public class PageDto<T> extends PageImpl<T> {
         return super.hasPrevious();
     }
 
-    @Override
     @NonNull
+    @Override
     public List<T> getContent() {
         return super.getContent();
     }
 
-    @Override
     @NonNull
+    @Override
     public <U> Page<U> map(@NonNull Function<? super T, ? extends U> converter) {
         List<U> list = getContent().stream().map(converter).collect(Collectors.toList());
         return new PageDto<>(list, getPageable(), getTotalElements());

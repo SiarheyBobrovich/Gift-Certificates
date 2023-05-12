@@ -18,15 +18,17 @@ import ru.clevertec.ecl.exception.TagNotFoundException;
 import ru.clevertec.ecl.service.TagService;
 import ru.clevertec.ecl.util.TestTagBuilder;
 
-
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static ru.clevertec.ecl.util.TestTagBuilder.*;
 
-@WebMvcTest(controllers = TagControllerImpl.class)
 @ActiveProfiles("test")
+@WebMvcTest(controllers = TagControllerImpl.class)
 class TagControllerImplTest {
 
     @Autowired
@@ -39,10 +41,10 @@ class TagControllerImplTest {
 
     public static Stream<RequestTagDto> getNegateRequestTag() {
         return Stream.of(
-          builder().withName(null).build().getRequestTag(),
-          builder().withName(" ").build().getRequestTag(),
-          builder().withName("\t").build().getRequestTag(),
-          builder().withName(",").build().getRequestTag()
+                builder().withName(null).build().getRequestTag(),
+                builder().withName(" ").build().getRequestTag(),
+                builder().withName("\t").build().getRequestTag(),
+                builder().withName(",").build().getRequestTag()
         );
     }
 
@@ -96,7 +98,7 @@ class TagControllerImplTest {
         }
 
         @Test
-        void getAllTags() {
+        void checkGetAllTags() {
             Pageable pageable = Pageable.ofSize(20);
             TestTagBuilder tagBuilder1 = builder().build();
             TestTagBuilder tagBuilder2 = builder().withId(2L).build();
@@ -121,7 +123,7 @@ class TagControllerImplTest {
         }
 
         @Test
-        void getAllTagsEmpty() {
+        void checkGetAllTagsEmpty() {
             Pageable pageable = Pageable.ofSize(20);
             List<ResponseTagDto> tagDtos = List.of();
             PageImpl<ResponseTagDto> dtoPage = new PageImpl<>(tagDtos);
@@ -144,8 +146,12 @@ class TagControllerImplTest {
     }
 
     @Test
-    void postTag() {
+    void checkPostTag() {
         RequestTagDto requestTag = builder().build().getRequestTag();
+        ResponseTagDto tagDto = builder().build().getResponseTag();
+
+        doReturn(tagDto)
+                .when(service).create(requestTag);
 
         testClient.post()
                 .uri(URI)
@@ -153,14 +159,13 @@ class TagControllerImplTest {
                 .bodyValue(requestTag)
                 .exchange()
                 .expectStatus()
-                .isCreated();
-
-        verify(service, times(1)).create(requestTag);
+                .isCreated()
+                .expectBody(ResponseTagDto.class).isEqualTo(tagDto);
     }
 
     @ParameterizedTest
     @MethodSource("getNegateRequestTag")
-    void postTagNegate(RequestTagDto dto) {
+    void checkPostTagNegate(RequestTagDto dto) {
         testClient.post()
                 .uri(URI)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -175,9 +180,13 @@ class TagControllerImplTest {
 
 
     @Test
-    void putTag() {
+    void checkPutTag() {
         RequestTagDto requestTag = builder().build().getRequestTag();
+        ResponseTagDto tagDto = builder().build().getResponseTag();
         Long id = 1L;
+
+        doReturn(tagDto)
+                .when(service).update(id, requestTag);
 
         testClient.put()
                 .uri(uriBuilder -> uriBuilder
@@ -188,13 +197,12 @@ class TagControllerImplTest {
                 .bodyValue(requestTag)
                 .exchange()
                 .expectStatus()
-                .isCreated();
-
-        verify(service, times(1)).update(id, requestTag);
+                .isOk()
+                .expectBody(ResponseTagDto.class).isEqualTo(tagDto);
     }
 
     @Test
-    void putTagThrows() {
+    void checkPutTagThrows() {
         RequestTagDto requestTag = builder().build().getRequestTag();
 
         doThrow(TagNotFoundException.class)
@@ -218,7 +226,7 @@ class TagControllerImplTest {
 
     @ParameterizedTest
     @MethodSource("getNegateRequestTag")
-    void putTagNegate(RequestTagDto dto) {
+    void checkPutTagNegate(RequestTagDto dto) {
         testClient.put()
                 .uri(uriBuilder -> uriBuilder
                         .path(URI)
@@ -236,7 +244,7 @@ class TagControllerImplTest {
     }
 
     @Test
-    void deleteTag() {
+    void checkDeleteTag() {
         Long id = 1L;
         testClient.delete()
                 .uri(uriBuilder -> uriBuilder
@@ -245,7 +253,7 @@ class TagControllerImplTest {
                         .build())
                 .exchange()
                 .expectStatus()
-                .isNoContent();
+                .isOk();
 
         verify(service, times(1))
                 .delete(id);
@@ -261,7 +269,7 @@ class TagControllerImplTest {
         testClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(URI)
-                        .pathSegment("popular")
+                        .pathSegment("widely")
                         .build())
                 .exchange()
                 .expectStatus()

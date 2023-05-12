@@ -19,9 +19,11 @@ public interface GiftCertificateRepository extends JpaRepository<GiftCertificate
     @Query("""
             SELECT c FROM GiftCertificate c LEFT JOIN c.tags t
                 WHERE
-                    (:tagName is null OR t.name =:tagName) AND
-                        (:part is null OR
-                            (c.name LIKE CONCAT('%', :part, '%') OR c.description LIKE CONCAT('%', :part, '%')))
+                    (?1 is null OR t.name = ?1) AND
+                        (?2 is null OR
+                            (c.name LIKE CONCAT('%', ?2, '%') OR c.description LIKE CONCAT('%', ?2, '%')))
             """)
-    Page<GiftCertificate> findByTagNameAndPartOfNameOrDescription(String tagName, String part, Pageable pageable);
+    Page<GiftCertificate> findByTagNameAndPartOfNameOrDescription(String tagName,
+                                                                  String part,
+                                                                  Pageable pageable);
 }

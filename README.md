@@ -1,23 +1,4 @@
-## gift certificate project for Clevertec
-### Technologies:
-- #### stack:
-<pre>
-    implementation 'org.mapstruct:mapstruct:1.5.3.Final'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
-    runtimeOnly 'org.postgresql:postgresql'
-
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.liquibase:liquibase-core'
-</pre>
-- #### test:
-<pre>
-    testImplementation "org.springframework.boot:spring-boot-starter-webflux"
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation "org.testcontainers:postgresql:1.17.6"
-    testImplementation "org.testcontainers:junit-jupiter:1.17.6"
-</pre>>
+## Gift certificate project for Clevertec
 ### Profiles:
   - Default
     - src/main/resources/application.yml 
@@ -38,7 +19,7 @@
 ## Endpoints:
   - ### Tags:
     - #### GET byId:
-      - url: http://localhost:8080/api/v1/tags/{{TAG_ID}}
+      - url: http://localhost:8080/api/v1/tags/1
         - response:
           - status: 200
           - body:
@@ -84,18 +65,18 @@
           }
         - response status: 201
     - #### PUT:
-      - url: http://localhost:8080/api/v1/tags/{{TAG_ID}}
+      - url: http://localhost:8080/api/v1/tags/1
         - request body:
           {
             "name": "#dada"
           }
         - response status: 201
     - #### DELETE:
-      - url: http://localhost:8080/api/v1/tags/{{TAG_ID}}
+      - url: http://localhost:8080/api/v1/tags/1
         - response status: 204
   - ### Certificates:
     - #### GET byId:
-      - url: http://localhost:8080/api/v1/certificates/{{ID}}
+      - url: http://localhost:8080/api/v1/certificates/2
         - response:
           - status: 200
           <pre>
@@ -120,7 +101,7 @@
             }
           </pre>
     - #### GET all:
-      - url: http://localhost:8080/api/v1/certificates/{{ID}}
+      - url: http://localhost:8080/api/v1/certificates
         - response:
           - status: 200
           <pre>
@@ -218,7 +199,7 @@
         - response:
           - status: 201
     - #### PATCH:
-      - url: http://localhost:8080/api/v1/certificates/{{ID}}
+      - url: http://localhost:8080/api/v1/certificates/1
         - request body:
           <pre>
             {
@@ -228,12 +209,12 @@
           </pre>
         - response status: 201
     - #### DELETE:
-      - url: http://localhost:8080/api/v1/certificates/{{ID}}
+      - url: http://localhost:8080/api/v1/certificates/1
         - response:
           - status: 204
   - ### Users:
     - #### GET byId:
-      - url: http://localhost:8080/api/v1/users/{{ID}}
+      - url: http://localhost:8080/api/v1/users/1
         - response:
           - status: 200
           <pre>

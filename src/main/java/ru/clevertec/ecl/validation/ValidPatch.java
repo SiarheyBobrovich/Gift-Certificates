@@ -9,10 +9,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Constraint(validatedBy = PatchValidator.class)
-@Target( { ElementType.TYPE})
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidPatch {
+
     String message() default "Invalid patch";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }
