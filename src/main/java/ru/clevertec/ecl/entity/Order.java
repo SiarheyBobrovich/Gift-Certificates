@@ -2,13 +2,13 @@ package ru.clevertec.ecl.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
+import ru.clevertec.ecl.entity.listener.OrderListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(schema = "certificate", name = "order")
+@EntityListeners(OrderListener.class)
 public class Order {
 
     @Id
@@ -49,11 +51,6 @@ public class Order {
 
     @Column(name = "purchase", nullable = false)
     private LocalDateTime purchase;
-
-    @PrePersist
-    void createPurchase() {
-        purchase = LocalDateTime.now();
-    }
 
     @Override
     public boolean equals(Object o) {
