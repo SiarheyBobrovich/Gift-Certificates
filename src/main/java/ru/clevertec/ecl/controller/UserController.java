@@ -2,6 +2,7 @@ package ru.clevertec.ecl.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.data.user.ResponseUserDto;
 import ru.clevertec.ecl.service.UserService;
 
-@Log4j2
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")

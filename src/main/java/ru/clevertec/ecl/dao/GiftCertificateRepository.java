@@ -2,6 +2,7 @@ package ru.clevertec.ecl.dao;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.clevertec.ecl.entity.GiftCertificate;
@@ -16,6 +17,7 @@ public interface GiftCertificateRepository extends JpaRepository<GiftCertificate
      * @param pageable current page
      * @return found gift certificates page
      */
+    @EntityGraph(attributePaths = "tags")
     @Query("""
             SELECT c FROM GiftCertificate c LEFT JOIN c.tags t
                 WHERE
