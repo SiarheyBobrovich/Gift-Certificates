@@ -3,9 +3,9 @@ package ru.clevertec.ecl.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.clevertec.ecl.repository.GiftCertificateRepository;
 import ru.clevertec.ecl.data.gift_certificate.RequestGiftCertificateDto;
 import ru.clevertec.ecl.data.gift_certificate.ResponseGiftCertificateDto;
 import ru.clevertec.ecl.data.tag.RequestTagDto;
@@ -17,12 +17,14 @@ import ru.clevertec.ecl.pageable.Filter;
 import ru.clevertec.ecl.pageable.PageDto;
 import ru.clevertec.ecl.pageable.Patch;
 import ru.clevertec.ecl.patcher.Patcher;
+import ru.clevertec.ecl.repository.GiftCertificateRepository;
 import ru.clevertec.ecl.service.GiftCertificateService;
 import ru.clevertec.ecl.service.TagNamesService;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,10 +56,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public Page<ResponseGiftCertificateDto> findByFilter(Filter filter, Pageable pageable) {
-        final Page<GiftCertificate> giftCertificates = repository.findByTagNameAndPartOfNameOrDescription(
-                filter.getTag(),
-                filter.getPart(),
-                pageable);
+        final String tagName = filter.getTag();
+        final String part = filter.getPart();
+        final Specification<GiftCertificate> specification = Specification.allOf(
+                Objects.nonNull(tagName) ? getSpecificationByTagName(tagName) : Specification.anyOf(),
+                Objects.nonNull(part) ? getSpecificationByPartOfNameOrDescription(part) : Specification.anyOf()
+        );
+
+        final Page<GiftCertificate> giftCertificates = repository.findAll(specification, pageable);
 
         return PageDto.of(giftCertificates)
                 .map(mapper::giftCertificateToResponseGiftCertificateDto);
@@ -144,5 +150,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                     existedTag.setId(tagDto.id());
                     return existedTag;
                 }).toList();
+    }
+
+    private Specification<GiftCertificate> getSpecificationByPartOfNameOrDescription(String part) {
+        String likePart = String.format("%%%s%%", part);
+        return Specification.anyOf(
+                (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("name"), likePart),
+                (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("description"), likePart));
+    }
+
+    private Specification<GiftCertificate> getSpecificationByTagName(String tagName) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("tags").get("name"), tagName);
     }
 }

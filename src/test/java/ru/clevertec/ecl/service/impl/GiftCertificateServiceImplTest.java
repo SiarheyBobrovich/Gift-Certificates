@@ -9,7 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import ru.clevertec.ecl.repository.GiftCertificateRepository;
+import org.springframework.data.jpa.domain.Specification;
 import ru.clevertec.ecl.data.gift_certificate.RequestGiftCertificateDto;
 import ru.clevertec.ecl.data.gift_certificate.ResponseGiftCertificateDto;
 import ru.clevertec.ecl.data.tag.ResponseTagDto;
@@ -22,6 +22,7 @@ import ru.clevertec.ecl.pageable.Filter;
 import ru.clevertec.ecl.pageable.PageDto;
 import ru.clevertec.ecl.pageable.Patch;
 import ru.clevertec.ecl.patcher.Patcher;
+import ru.clevertec.ecl.repository.GiftCertificateRepository;
 import ru.clevertec.ecl.service.TagNamesService;
 import ru.clevertec.ecl.util.CertificateBuilder;
 
@@ -36,7 +37,9 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -320,7 +323,7 @@ class GiftCertificateServiceImplTest {
         doReturn(certificateDto3)
                 .when(mapper).giftCertificateToResponseGiftCertificateDto(certificate3);
         doReturn(returned).when(repository)
-                .findByTagNameAndPartOfNameOrDescription(null, "1", pageable);
+                .findAll(any(Specification.class), eq(pageable));
 
         Page<ResponseGiftCertificateDto> actual = service.findByFilter(filter, pageable);
 

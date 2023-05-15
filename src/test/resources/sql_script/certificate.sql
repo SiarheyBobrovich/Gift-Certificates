@@ -8,7 +8,7 @@ INSERT INTO certificate.gift_certificate (name,
                                           create_date,
                                           last_update_date)
 VALUES ('first', 'one', '1.11', 11, '2023-04-01 00:00:00', CURRENT_TIMESTAMP),
-       ('second', 'two', '2.22', 22, '2023-04-02 00:00:00', CURRENT_TIMESTAMP),
+       ('second', 'two', '2.22', 22, '2023-04-02 00:00:00', '2023-04-02 00:00:00'),
        ('third', 'three', '3.33', 33, '2023-04-03 00:00:00', CURRENT_TIMESTAMP),
        ('fourth', 'four', '4.44', 44, '2023-04-04 00:00:00', CURRENT_TIMESTAMP);
 

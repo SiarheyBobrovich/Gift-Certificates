@@ -23,7 +23,7 @@ import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static ru.clevertec.ecl.util.CertificateBuilder.builder;
+import static ru.clevertec.ecl.util.CertificateBuilder.*;
 import static ru.clevertec.ecl.util.CertificateBuilder.getResponseList;
 
 @IntegrationTest

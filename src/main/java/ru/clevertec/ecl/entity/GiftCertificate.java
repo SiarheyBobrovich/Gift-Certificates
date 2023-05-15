@@ -36,8 +36,8 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(schema = "certificate", name = "gift_certificate")
 @EntityListeners(GiftCertificateListener.class)
+@Table(schema = "certificate", name = "gift_certificate")
 public class GiftCertificate implements Serializable {
 
     @Id

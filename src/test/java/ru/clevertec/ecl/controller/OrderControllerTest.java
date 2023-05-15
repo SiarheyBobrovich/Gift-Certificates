@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.doReturn;
-import static ru.clevertec.ecl.util.TestOrderBuilder.builder;
+import static ru.clevertec.ecl.util.TestOrderBuilder.*;
 
 @ActiveProfiles("test")
 @WebMvcTest(controllers = OrderController.class)
