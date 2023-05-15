@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.dao;
+package ru.clevertec.ecl.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

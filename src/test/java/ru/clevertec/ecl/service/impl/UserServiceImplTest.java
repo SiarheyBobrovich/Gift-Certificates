@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import ru.clevertec.ecl.dao.UserRepository;
+import ru.clevertec.ecl.repository.UserRepository;
 import ru.clevertec.ecl.data.user.ResponseUserDto;
 import ru.clevertec.ecl.entity.User;
 import ru.clevertec.ecl.exception.UserNotFoundException;

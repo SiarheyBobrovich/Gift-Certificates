@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import ru.clevertec.ecl.dao.OrderRepository;
+import ru.clevertec.ecl.repository.OrderRepository;
 import ru.clevertec.ecl.data.gift_certificate.ResponseGiftCertificateDto;
 import ru.clevertec.ecl.data.order.CreateOrderDto;
 import ru.clevertec.ecl.data.order.ResponseOrderDto;

@@ -10,7 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import ru.clevertec.ecl.dao.TagRepository;
+import ru.clevertec.ecl.repository.TagRepository;
 import ru.clevertec.ecl.data.tag.RequestTagDto;
 import ru.clevertec.ecl.data.tag.ResponseTagDto;
 import ru.clevertec.ecl.entity.Tag;

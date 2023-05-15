@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.clevertec.ecl.dao.OrderRepository;
+import ru.clevertec.ecl.repository.OrderRepository;
 import ru.clevertec.ecl.data.gift_certificate.ResponseGiftCertificateDto;
 import ru.clevertec.ecl.data.order.CreateOrderDto;
 import ru.clevertec.ecl.data.order.ResponseOrderDto;

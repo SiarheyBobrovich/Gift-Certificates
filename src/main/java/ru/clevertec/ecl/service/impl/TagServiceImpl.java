@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.clevertec.ecl.dao.TagRepository;
+import ru.clevertec.ecl.repository.TagRepository;
 import ru.clevertec.ecl.data.tag.RequestTagDto;
 import ru.clevertec.ecl.data.tag.ResponseTagDto;
 import ru.clevertec.ecl.entity.Tag;

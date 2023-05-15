@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.dao;
+package ru.clevertec.ecl.repository;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

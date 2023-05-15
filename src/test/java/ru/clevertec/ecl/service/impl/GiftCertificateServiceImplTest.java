@@ -9,7 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import ru.clevertec.ecl.dao.GiftCertificateRepository;
+import ru.clevertec.ecl.repository.GiftCertificateRepository;
 import ru.clevertec.ecl.data.gift_certificate.RequestGiftCertificateDto;
 import ru.clevertec.ecl.data.gift_certificate.ResponseGiftCertificateDto;
 import ru.clevertec.ecl.data.tag.ResponseTagDto;
