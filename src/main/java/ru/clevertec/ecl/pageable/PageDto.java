@@ -1,6 +1,7 @@
 package ru.clevertec.ecl.pageable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,7 @@ public class PageDto<T> extends PageImpl<T> {
     }
 
     @Override
+    @Schema(example = "20")
     public int getSize() {
         return super.getSize();
     }

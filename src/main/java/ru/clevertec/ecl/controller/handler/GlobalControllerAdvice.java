@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.clevertec.ecl.exception.AbstractServiceException;
+import ru.clevertec.ecl.exception.ResponseError;
 
 @Log4j2
 @RestControllerAdvice
@@ -47,10 +48,5 @@ public class GlobalControllerAdvice {
         ResponseError responseError = new ResponseError(message, 400);
 
         return ResponseEntity.badRequest().body(responseError);
-    }
-
-    record ResponseError(String errorMessage,
-                         int errorCode
-    ) {
     }
 }

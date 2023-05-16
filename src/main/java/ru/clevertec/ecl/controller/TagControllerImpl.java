@@ -2,7 +2,6 @@ package ru.clevertec.ecl.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.clevertec.ecl.controller.api.TagOpenApi;
+import ru.clevertec.ecl.controller.open_api.TagOpenApi;
 import ru.clevertec.ecl.data.tag.RequestTagDto;
 import ru.clevertec.ecl.data.tag.ResponseTagDto;
 import ru.clevertec.ecl.service.TagService;

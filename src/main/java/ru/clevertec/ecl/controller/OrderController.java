@@ -2,7 +2,6 @@ package ru.clevertec.ecl.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.clevertec.ecl.controller.open_api.OrderOpenApi;
 import ru.clevertec.ecl.data.order.CreateOrderDto;
 import ru.clevertec.ecl.data.order.ResponseOrderDto;
 import ru.clevertec.ecl.service.OrderService;
@@ -24,10 +24,11 @@ import ru.clevertec.ecl.service.OrderService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/orders")
-public class OrderController {
+public class OrderController implements OrderOpenApi {
 
     private final OrderService orderService;
 
+    @Override
     @GetMapping("/{userId}")
     public ResponseEntity<Page<ResponseOrderDto>> findAllOrdersByUserId(@PageableDefault(20) Pageable pageable,
                                                                         @PathVariable Long userId) {
@@ -37,6 +38,7 @@ public class OrderController {
         return ResponseEntity.ok(responseOrderDtoPage);
     }
 
+    @Override
     @PostMapping
     public ResponseEntity<ResponseOrderDto> createNewOrder(@RequestBody @Valid CreateOrderDto createOrderDto) {
         ResponseOrderDto orderDto = orderService.create(createOrderDto);
