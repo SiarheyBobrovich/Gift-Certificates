@@ -3,7 +3,6 @@ package ru.clevertec.ecl.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.TargetType;
 import ru.clevertec.ecl.data.gift_certificate.RequestGiftCertificateDto;
 import ru.clevertec.ecl.data.gift_certificate.ResponseGiftCertificateDto;
 import ru.clevertec.ecl.entity.GiftCertificate;
@@ -24,7 +23,10 @@ public interface GiftCertificateMapper {
 
     GiftCertificate ResponseGiftCertificateDtoToGiftCertificate(ResponseGiftCertificateDto responseGiftCertificateDto);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "tags", ignore = true)
+    @Mapping(target = "createDate", ignore = true)
+    @Mapping(target = "lastUpdateDate", ignore = true)
     GiftCertificate merge(@MappingTarget GiftCertificate certificate,
-               RequestGiftCertificateDto dto);
+                          RequestGiftCertificateDto dto);
 }
