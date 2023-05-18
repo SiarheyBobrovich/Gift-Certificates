@@ -1,5 +1,5 @@
 spring:
   datasource:
-    url:
-    username:
-    password:
+    url: jdbc:postgresql://db:5432/clevertec
+    username: postgres
+    password: postgres
