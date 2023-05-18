@@ -20,24 +20,24 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.controller.open_api.GiftCertificateOpenApi;
 import ru.clevertec.ecl.data.gift_certificate.RequestGiftCertificateDto;
 import ru.clevertec.ecl.data.gift_certificate.ResponseGiftCertificateDto;
+import ru.clevertec.ecl.logging.Logging;
 import ru.clevertec.ecl.pageable.Filter;
 import ru.clevertec.ecl.pageable.Patch;
 import ru.clevertec.ecl.service.GiftCertificateService;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/certificates")
+@Logging
 public class GiftCertificateControllerImpl implements GiftCertificateOpenApi {
 
     private final GiftCertificateService service;
 
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseGiftCertificateDto> getByFilter(@PathVariable Long id) {
+    public ResponseEntity<ResponseGiftCertificateDto> getById(@PathVariable Long id) {
         ResponseGiftCertificateDto giftCertificateDto = service.findById(id);
 
-        log.info("GET/{}\nResponse::{}", id, giftCertificateDto);
         return ResponseEntity.ok(giftCertificateDto);
     }
 
@@ -46,7 +46,6 @@ public class GiftCertificateControllerImpl implements GiftCertificateOpenApi {
     public ResponseEntity<Page<ResponseGiftCertificateDto>> getByFilter(@PageableDefault(20) Pageable pageable,
                                                                         @Valid Filter filter) {
         Page<ResponseGiftCertificateDto> giftCertificateDtoList = service.findByFilter(filter, pageable);
-        log.info("GET/filter::{}\nResponse::{}", filter, giftCertificateDtoList);
 
         return ResponseEntity.ok(giftCertificateDtoList);
     }
@@ -55,7 +54,6 @@ public class GiftCertificateControllerImpl implements GiftCertificateOpenApi {
     @GetMapping
     public ResponseEntity<Page<ResponseGiftCertificateDto>> getAllGiftCertificates(@PageableDefault(20) Pageable pageable) {
         Page<ResponseGiftCertificateDto> giftCertificateDtoList = service.findAll(pageable);
-        log.info("GET::{}\nResponse::{}", pageable, giftCertificateDtoList);
 
         return ResponseEntity.ok(giftCertificateDtoList);
     }
@@ -64,7 +62,6 @@ public class GiftCertificateControllerImpl implements GiftCertificateOpenApi {
     @PostMapping
     public ResponseEntity<ResponseGiftCertificateDto> postGiftCertificate(@RequestBody @Valid RequestGiftCertificateDto dto) {
         ResponseGiftCertificateDto certificateDto = service.create(dto);
-        log.info("POST::{}\nResponse::{}", dto, certificateDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(certificateDto);
     }
@@ -74,7 +71,6 @@ public class GiftCertificateControllerImpl implements GiftCertificateOpenApi {
     public ResponseEntity<ResponseGiftCertificateDto> putGiftCertificate(@PathVariable Long id,
                                                                          @RequestBody @Valid RequestGiftCertificateDto dto) {
         ResponseGiftCertificateDto giftCertificateDto = service.update(id, dto);
-        log.info("PUT/{}::{}\nResponse::{}", id, dto, giftCertificateDto);
 
         return ResponseEntity.ok(giftCertificateDto);
     }
@@ -83,7 +79,6 @@ public class GiftCertificateControllerImpl implements GiftCertificateOpenApi {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGiftCertificate(@PathVariable Long id) {
         service.delete(id);
-        log.info("DELETE/{}", id);
 
         return ResponseEntity.ok().build();
     }
@@ -93,7 +88,6 @@ public class GiftCertificateControllerImpl implements GiftCertificateOpenApi {
     public ResponseEntity<ResponseGiftCertificateDto> patchGiftCertificate(@PathVariable Long id,
                                                                            @RequestBody @Valid Patch patch) {
         ResponseGiftCertificateDto certificateDto = service.patch(id, patch);
-        log.info("PATCH/{}::{}\nResponse::{}", id, patch, certificateDto);
 
         return ResponseEntity.ok(certificateDto);
     }

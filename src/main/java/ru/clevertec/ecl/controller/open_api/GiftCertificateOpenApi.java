@@ -42,7 +42,7 @@ public interface GiftCertificateOpenApi {
                                     mediaType = APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ResponseError.class)))
             })
-    ResponseEntity<ResponseGiftCertificateDto> getByFilter(Long id);
+    ResponseEntity<ResponseGiftCertificateDto> getById(Long id);
 
     @Operation(
             description = "Find gift-certificates page by filter",
