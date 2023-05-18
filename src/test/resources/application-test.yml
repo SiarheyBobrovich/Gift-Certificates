@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    username: test
+    password: test
+  jpa:
+    show_sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  liquibase:
+    enabled: true
+    change-log: liquibase/db.changelog-master.yml

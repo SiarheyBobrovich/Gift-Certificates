@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  db:
+    build: postgresql
+    image: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - /docker-entrypoint-initdb.d
+  certificates:
+    build:
+      dockerfile: Dockerfile
+    image: certificate_s
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "80:8080"

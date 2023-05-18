@@ -1,0 +1,31 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="Bobrovich">
+        <sql>
+            CREATE TABLE certificate.order
+            (
+                id       BIGSERIAL PRIMARY KEY NOT NULL,
+                gc_id    BIGINT                NOT NULL,
+                price    DECIMAL               NOT NULL,
+                user_id  BIGINT                NOT NULL,
+                purchase TIMESTAMP WITHOUT TIME ZONE NOT NULL
+            )
+        </sql>
+    </changeSet>
+    <changeSet id="2" author="Bobrovich">
+        <addForeignKeyConstraint baseTableSchemaName="certificate" baseTableName="order" baseColumnNames="gc_id"
+                                 constraintName="FK_orders_ON_gc"
+                                 referencedTableSchemaName="certificate"
+                                 referencedTableName="gift_certificate"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableSchemaName="certificate" baseTableName="order" baseColumnNames="user_id"
+                                 constraintName="FK_order_ON_users"
+                                 referencedTableSchemaName="certificate"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

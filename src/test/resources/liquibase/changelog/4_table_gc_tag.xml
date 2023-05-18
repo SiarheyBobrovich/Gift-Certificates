@@ -1,0 +1,23 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="Bobrovich">
+        <createTable tableName="gc_tag" schemaName="certificate">
+            <column name="gc_id" type="BIGINT">
+                <constraints foreignKeyName="gc_id_ON_gift_certificate_id"
+                             referencedTableSchemaName="certificate"
+                             referencedTableName="gift_certificate"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="t_id" type="BIGINT">
+                <constraints foreignKeyName="t_id_ON_tag_id"
+                             referencedTableSchemaName="certificate"
+                             referencedTableName="tag"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
