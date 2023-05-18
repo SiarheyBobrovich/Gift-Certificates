@@ -13,7 +13,7 @@ import ru.clevertec.ecl.data.order.CreateOrderDto;
 import ru.clevertec.ecl.data.order.ResponseOrderDto;
 import ru.clevertec.ecl.data.user.ResponseUserDto;
 import ru.clevertec.ecl.entity.Order;
-import ru.clevertec.ecl.mapper.AbstractOrderMapper;
+import ru.clevertec.ecl.mapper.OrderMapper;
 import ru.clevertec.ecl.mapper.UserMapper;
 import ru.clevertec.ecl.service.GiftCertificateService;
 import ru.clevertec.ecl.service.UserService;
@@ -43,7 +43,7 @@ class OrderServiceImplTest {
     private OrderRepository repository;
 
     @Mock
-    private AbstractOrderMapper orderMapper;
+    private OrderMapper orderMapper;
 
     @Mock
     private UserMapper userMapper;

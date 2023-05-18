@@ -12,9 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.controller.open_api.UserOpenApi;
 import ru.clevertec.ecl.data.user.ResponseUserDto;
+import ru.clevertec.ecl.logging.Logging;
 import ru.clevertec.ecl.service.UserService;
 
-@Slf4j
+@Logging
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
@@ -26,7 +27,6 @@ public class UserController implements UserOpenApi {
     @GetMapping
     public ResponseEntity<Page<ResponseUserDto>> getAllUsers(@PageableDefault(20) Pageable pageable) {
         Page<ResponseUserDto> userDtoPage = userService.findAll(pageable);
-        log.info("GET::{}\nResponse::{}", pageable, userDtoPage);
 
         return ResponseEntity.ok(userDtoPage);
     }
@@ -35,7 +35,6 @@ public class UserController implements UserOpenApi {
     @GetMapping("/{id}")
     public ResponseEntity<ResponseUserDto> getById(@PathVariable Long id) {
         ResponseUserDto userDto = userService.findById(id);
-        log.info("GET/{}\nResponse::{}", id, userDto);
 
         return ResponseEntity.ok(userDto);
     }
