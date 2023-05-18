@@ -11,15 +11,12 @@ import ru.clevertec.ecl.entity.User;
 public interface OrderMapper {
 
     @Mapping(target = "giftCertificateId", source = "giftCertificate.id")
-    ResponseOrderDto OrderToResponseOrderDto(Order order);
+    ResponseOrderDto orderToResponseOrderDto(Order order);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "purchase", ignore = true)
     @Mapping(target = "price", source = "giftCertificate.price")
     @Mapping(target = "giftCertificate", source = "giftCertificate")
     Order createOrderDtoToOrder(User user,
-                                ResponseGiftCertificateDto giftCertificate);
-
-    @Mapping(target = "user", ignore = true)
-    Order responseOrderDtoToOrder(ResponseOrderDto orderDto);
+                                                ResponseGiftCertificateDto giftCertificate);
 }

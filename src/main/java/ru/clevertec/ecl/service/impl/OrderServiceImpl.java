@@ -12,7 +12,7 @@ import ru.clevertec.ecl.data.order.ResponseOrderDto;
 import ru.clevertec.ecl.data.user.ResponseUserDto;
 import ru.clevertec.ecl.entity.Order;
 import ru.clevertec.ecl.entity.User;
-import ru.clevertec.ecl.mapper.AbstractOrderMapper;
+import ru.clevertec.ecl.mapper.OrderMapper;
 import ru.clevertec.ecl.mapper.UserMapper;
 import ru.clevertec.ecl.pageable.PageDto;
 import ru.clevertec.ecl.service.GiftCertificateService;
@@ -27,7 +27,7 @@ public class OrderServiceImpl implements OrderService {
     private final GiftCertificateService gcService;
     private final UserService userService;
     private final OrderRepository repository;
-    private final AbstractOrderMapper orderMapper;
+    private final OrderMapper orderMapper;
     private final UserMapper userMapper;
 
     @Override

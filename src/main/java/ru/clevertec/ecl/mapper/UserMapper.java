@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import ru.clevertec.ecl.data.user.ResponseUserDto;
 import ru.clevertec.ecl.entity.User;
 
-@Mapper(uses = AbstractOrderMapper.class)
+@Mapper(uses = OrderMapper.class)
 public interface UserMapper {
 
 
